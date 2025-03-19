@@ -1,5 +1,12 @@
+# ------------------------------------------------------------------------------
+
+# Title: Small-sized and deepwater chondrichthyans face increased mortality risk in bottom trawling
+
+#-------------------------------------------------------------------------------
+
+
 #----------------------------------------------------------------------------------- 
-# 3_Means: Calculate the mean, deviation, min and max for fishing operation traits for each tow, enviro parameters and iological parameters
+# 3_2_Means: Calculate the mean, deviation, min and max for fishing operation traits for each tow, enviro parameters and biological parameters
 #----------------------------------------------------------------------------------- 
 
 # Group the data by tows and calculate mean and standard deviation for the specified columns, which are:

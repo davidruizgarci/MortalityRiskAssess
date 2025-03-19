@@ -1,3 +1,8 @@
+# ------------------------------------------------------------------------------
+
+# Title: Small-sized and deepwater chondrichthyans face increased mortality risk in bottom trawling
+
+#-------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------
 # Download CMEMS data      
 #------------------------------------------------------------------------------------
@@ -14,7 +19,7 @@ catalog <- read.csv("input/Catalog_CMEMS.csv", sep=";")
 head(catalog)
 
 # Import dataset
-data <- read.csv2("output/dataset_rm_var.csv", sep = ";")
+data <- read.csv2("temp/AVM_allEnviro.csv", sep = ";")
 
 # extract the dates in which there is data:
 data$date <- as.Date(data$time)

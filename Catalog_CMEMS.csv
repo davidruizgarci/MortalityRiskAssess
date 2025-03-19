@@ -1,0 +1,5 @@
+﻿id_product;var_name;variable;product_type;provider;service;layer;standard_name;units;date_min;date_max;depth_min;depth_max;temporal_resolution;spatial_resolution;var;xmin;xmax;ymin;ymax;subvar;date_min_total;date_max_total
+1;temp_Reanalysis;thetao;Reanalysis;CMEMS;MEDSEA_MULTIYEAR_PHY_006_004;med-cmcc-tem-rean-d;Sea_water_potential_temperature;ºC;01/12/2020;31/05/2023;-1;-5754;daily;0.042° × 0.042°;thetao;-2;4;36;42;thetao;01/01/1987;30/06/2021
+3;SBT_Reanalysis;bottomT;Reanalysis;CMEMS;MEDSEA_MULTIYEAR_PHY_006_004;med-cmcc-tem-rean-d;Sea_water_potential_temperature;ºC;01/12/2020;31/05/2023;-1;-5754;daily;0.042° × 0.042°;bottomT;-2;4;36;42;bottomT;01/01/1987;30/06/2021
+4;temp_Analysis;thetao;Analysis;CMEMS;MEDSEA_ANALYSISFORECAST_PHY_006_013;cmems_mod_med_phy-tem_anfc_4.2km_P1D-m;Sea_water_potential_temperature;ºC;01/09/2022;01/07/2024;-1;-5754;daily;0.042° × 0.042°;thetao;-2;4;36;42;thetao;25/09/2021;09/10/2023
+5;SBT_Analysis;bottomT;Analysis;CMEMS;MEDSEA_ANALYSISFORECAST_PHY_006_013;cmems_mod_med_phy-tem_anfc_4.2km_P1D-m;Sea_water_potential_temperature;ºC;01/09/2022;01/07/2024;-1;-5754;daily;0.042° × 0.042°;bottomT;-2;4;36;42;bottomT;25/09/2021;09/10/2023

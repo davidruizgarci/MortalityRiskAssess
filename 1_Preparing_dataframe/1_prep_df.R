@@ -1,5 +1,10 @@
+# ------------------------------------------------------------------------------
+
+# Title: Small-sized and deepwater chondrichthyans face increased mortality risk in bottom trawling
+
+#-------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------
-# Organise your data set previously to import enviromental data     
+# Organise your data set previously to import environmental data     
 #------------------------------------------------------------------------------------
 
 #Load data

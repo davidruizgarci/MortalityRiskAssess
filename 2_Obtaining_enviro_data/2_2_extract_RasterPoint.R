@@ -1,3 +1,8 @@
+# ------------------------------------------------------------------------------
+
+# Title: Small-sized and deepwater chondrichthyans face increased mortality risk in bottom trawling
+
+#-------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------
 # Extract 2D data from raster to points   
 #------------------------------------------------------------------------------------
@@ -7,7 +12,7 @@ library(dplyr)
 library(fasterize)
 
 #Load data
-data <- read.csv("output/dataset_rm_var.csv", sep = ";") #remember having date format in your .csv (actively change it)
+data <- read.csv("temp/AVM_allEnviro.csv", sep = ";") #remember having date format in your .csv (actively change it)
 names(data)
 head(data)
 
@@ -35,7 +40,7 @@ data$bathy <- raster::extract(bathy, cbind(data$lon, data$lat))
 data$bathy <- abs(data$bathy)
 head(data)
 
-# 1.2) Sea bottom tempe
+# 1.2) Sea bottom tempetature
 catalog <- read.csv2("input/Catalog_CMEMS.csv", sep=";")
 head(catalog)
 cat <- catalog %>%
@@ -61,24 +66,33 @@ for (pid in unique(cat$id_product)) {
 }
 head(data)
 
-
-# 1.3) Sea bottom oxygen
-data$depth <- data$bathy #if your time scale has not hours
+# 1.2) Sea surface temperature
+catalog <- read.csv2("input/Catalog_CMEMS.csv", sep=";")
+head(catalog)
 cat <- catalog %>%
-  filter(var_name %in% "SBO_Reanalysis")
+  filter(var_name %in% "temp_Reanalysis")
+
+
+# The only 2D variable is SBT (med-cmcc-tem-rean-d)
+# make a loop to (1) open each file ".nc" (2) configure time format and (3) extract data
+
+# Repository to folder where netCDFs are:
+repo <- paste0(input_data, "/cmems") 
+
+#Open example:
+path <- paste0(input_data, "/cmems/MEDSEA_MULTIYEAR_PHY_006_004/med-cmcc-tem-rean-d/temp_Reanalysis/2020/12/02/temp_Reanalysis_2020-12-02.nc") 
+nc <- nc_open(path)
+print(nc)
+
+#example <- brick("input/cmems/MEDSEA_MULTIYEAR_PHY_006_004/med-cmcc-tem-rean-d/SBT_Reanalysis/2020/06/18/SBT_Reanalysis_2020-06-18.nc")
 
 # Iterate over each productid in 'cat' dataframe
 for (pid in unique(cat$id_product)) {
   # Filter data corresponding to current productid
+  # example for checking code:  id_product <- 1
   subset_data <- subset(cat, id_product == pid)
   
-  # Apply cmems3d_bottom function to subset of data
-  data_tows <- cmems3d_bottom(lon=data$lon, lat=data$lat, date=data$date, productid=pid, repo=repo, data=data)
-  
-  # Optionally, you can assign the modified 'data' back to your original dataframe or save it somewhere
-  # For example, if you want to update 'data' in place, you can do:
-  # data <- data
-  
+  data <- cmems3d_surface(lon=data$lon, lat=data$lat, date=data$date, productid=pid, repo=repo, data=data)
   # Print or save any necessary output or results
   print(paste("Processed productid:", pid))
 }

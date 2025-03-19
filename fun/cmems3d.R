@@ -27,7 +27,7 @@ cmems2d <- function(lon, lat, date, productid, repo, data) {
   library(dplyr)
   
   # Get information and variable name for a given product
-  # example for code testing: productid <- 1
+  # example for code testing: productid <- 3
   product_info <- filter(cat, id_product == productid)
   var <- as.character(product_info$variable)
   
@@ -97,7 +97,6 @@ cmems2d <- function(lon, lat, date, productid, repo, data) {
 }
 
 
-
 # Extract surface data from 3D:
 cmems3d_surface <- function(lon, lat, date, productid, repo, data, maxZ = NULL) {
   # Description
@@ -125,7 +124,7 @@ cmems3d_surface <- function(lon, lat, date, productid, repo, data, maxZ = NULL) 
   library(dplyr)
   
   # Get information and variable name for a given product
-  # example for code checking: productid <- 2
+  # example for code checking: productid <- 1
   product_info <- filter(cat, id_product == productid)
   var <- as.character(product_info$variable)
   
@@ -147,6 +146,7 @@ cmems3d_surface <- function(lon, lat, date, productid, repo, data, maxZ = NULL) 
     ilon <- data$lon[i]
     ilat <- data$lat[i]
     idepth <- data$depth[i]
+    code <- data$code[i]
     
     # create direction
     date <- as.character(iday)
@@ -168,9 +168,11 @@ cmems3d_surface <- function(lon, lat, date, productid, repo, data, maxZ = NULL) 
     nclon <- nc$dim$lon$vals # ncvar_get(nc, varid="lon")
     nclat <- nc$dim$lat$vals # ncvar_get(nc, varid="lat")
     ncdepth <- nc$dim$depth$vals
+    # maxZ = 0
     maxZ <- if (is.null(maxZ)) nc$dim$depth$len else maxZ
     nctime <- nc$dim$time$vals
-    ncday <- as.POSIXct(nctime, origin = "1970-01-01", tz = "UTC")
+    #ncday <- as.POSIXct(nctime, origin = "1970-01-01", tz = "UTC")
+    ncday <- as.POSIXct("1900-01-01", tz = "UTC") + (nctime * 60)
     
     # identify nearest neighbour locations
     minlon <- which.min(abs(nclon - ilon))
