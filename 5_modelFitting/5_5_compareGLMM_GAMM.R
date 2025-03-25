@@ -7,7 +7,7 @@
 #-------------------------------------------------------------------------------
 
 # 1. Load AVM data--------------------------------------------------------------
-data <- read.csv("temp/mod2AVM_allEnviro - copia.csv", sep = ";")
+data <- read.csv("temp/mod5AVM_allEnviro - copia.csv", sep = ";")
 
 #Format:
 names(data)

@@ -3,9 +3,10 @@
 # Title: Small-sized and deepwater chondrichthyans face increased mortality risk in bottom trawling
 
 #-------------------------------------------------------------------------------
-
-
 library(dplyr)
+
+
+
 
 #-------------------------------------------------------------------------------
 # 1_2_TotalFigures: Calculate total biomass and individuals captured

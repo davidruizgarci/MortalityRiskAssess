@@ -11,7 +11,7 @@ library(ggplot2)
 library(tidyr)
 
 #Load data
-data <- read.csv("temp/mod5AVM_allEnviro - copia.csv", sep = ";") #data_env_all.csv
+data <- read.csv("temp/mod5AVM_allEnviro - copia - copia.csv", sep = ";") #data_env_all.csv
 names(data)
 head(data)
 
@@ -253,12 +253,12 @@ p_png <- paste0(output_data, "/Trade_prop.png")
 #  ) 
 
 data_health <- data %>%
-  filter(!is.na(Activity)) %>%
+  filter(!is.na(Health_prob)) %>%
   filter(Alive_Dead == 1)
 
 # Verify that the values have been recoded as expected
 head(data_health)  # Display the first few rows of the modified data
-nrow(data_health) #1157
+nrow(data_health) #1141
 names(data_health)
 
 #Save dataset
@@ -391,9 +391,9 @@ p <- ggplot(combined_data, aes(x = numericSp, y = Percentage, fill = Value)) +
   facet_wrap(~Metric, scales = "free_x") +   # Separate plots for each Metric
   
   # Adding mean points and error bars for SD using distinct to only get the first occurrence for each Metric
-  geom_point(data = combined_data %>% group_by(numericSp, Metric) %>% slice(1), 
+  geom_point(data = combined_data %>% group_by(numericSp, Metric) %>% dplyr::slice(1), 
            aes(x = numericSp, y = Mean), color = "black", size = 2, position = position_dodge(width = 0.9)) +
-  geom_errorbar(data = combined_data %>% group_by(numericSp, Metric) %>% slice(1), 
+  geom_errorbar(data = combined_data %>% group_by(numericSp, Metric) %>% dplyr::slice(1), 
                 aes(x = numericSp, ymin = pmax(0, Mean - SD), ymax = pmin(100, Mean + SD)), 
                 color = "black", width = 0.05, position = position_dodge(width = 0.9))
 
@@ -402,7 +402,7 @@ print(p)
 
 # export plot
 p_png <- paste0(output_data, "/Health_prop_FINAL.png")
-ggsave(p_png, p, width=16, height=12, units="cm", dpi=300)
+ggsave(p_png, p, width=16, height=12, units="cm", dpi=600)
 
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
@@ -482,4 +482,4 @@ print(p_health)
 
 # export plot
 p_png <- paste0(output_data, "/Health_Overall_FINAL.png")
-#ggsave(p_png, p_health, width=7, height=12, units="cm", dpi=300)
+ggsave(p_png, p_health, width=7, height=12, units="cm", dpi=600)
