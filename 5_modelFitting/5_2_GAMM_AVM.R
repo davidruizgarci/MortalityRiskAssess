@@ -20,7 +20,7 @@ library(caret)  # For cross-validation
 library(mgcViz) # partial effects
 
 # 1. Load AVM data--------------------------------------------------------------
-data <- read.csv("temp/mod5AVM_allEnviro - copia - copia.csv", sep = ";") #mod5AVM_allEnviro - copia
+data <- read.csv("temp/final/AVM_allEnviro.csv", sep = ";") #
 
 #Format:
 names(data)
@@ -450,12 +450,19 @@ gamm_model <- gam(
 summary(gamm_model)         
 AIC(gamm_model)             
 draw(gamm_model, scales = 'free')
-plot(gamm_model, pages = 1) 
+#plot(gamm_model, pages = 1) 
 #gam.check(gamm_model)
 appraise(gamm_model, method = 'simulate')      
 
 # Variance explained
-summary(gamm_model)$dev.expl
+summary(gamm_model)$dev.expl #55.32%
+
+# Save the model:
+path <- paste0(output_data, "/model/AVM")
+if (!dir.exists(path)) dir.create(path, recursive = TRUE)
+file_name <- paste0(path, "/AVM_GAMM.rds")
+saveRDS(gamm_model, file = file_name)
+
 
 # check results:
 # Get predicted probabilities
@@ -480,8 +487,11 @@ gamm_fixed <- gam(
   method = "REML"
 )
 
-summary(gamm_fixed)$dev.expl     # model without random effects
-summary(gamm_model)$dev.expl     # model with random effects
+fix <- summary(gamm_fixed)$dev.expl     # model without random effects
+all <- summary(gamm_model)$dev.expl     # model with random effects
+random <- all-fix
+print(paste("Percentage of variance explained by random factors:", round(random * 100/all, 1), "%"))
+# Percentage of variance explained by random factors: 21.5%
 
 
 # 4. Plot the factor effect-----------------------------------------------------

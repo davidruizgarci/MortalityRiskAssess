@@ -11,7 +11,7 @@ library(ggplot2)
 library(tidyr)
 
 #Load data
-data <- read.csv("temp/mod5AVM_allEnviro - copia - copia.csv", sep = ";") #data_env_all.csv
+data <- read.csv("temp/final/AVM_allEnviro.csv", sep = ";") #
 names(data)
 head(data)
 
@@ -116,7 +116,7 @@ AVM_percentage_df$numericSp <- factor(AVM_percentage_df$numericSp, levels = rev(
 #AVM_percentage_df$numericSp <- factor(AVM_percentage_df$numericSp, levels = AVM_percentage_df$numericSp)
 
 # Melt the data to long format to use in ggplot
-library(tidyr)
+
 AVM_long <- AVM_percentage_df %>%
   pivot_longer(cols = c(PercentageAliveDead0, SurvivalPercentage),
                names_to = "Status",

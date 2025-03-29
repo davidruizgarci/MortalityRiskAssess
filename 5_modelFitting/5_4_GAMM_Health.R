@@ -22,7 +22,7 @@ library(mgcViz) # partial effects
 library(bbmle) # Calculate qAIC
 
 # 1. Load AVM data--------------------------------------------------------------
-data <- read.csv("temp/mod5AVM_allEnviro - copia - copia.csv", sep = ";") #
+data <- read.csv("temp/final/AVM_allEnviro.csv", sep = ";") #
 
 #Format:
 names(data)
@@ -394,9 +394,25 @@ model_quasi <- gam(
   method = "REML"
 )
 
+model_beta <- gam(
+  Health_prob_scaled ~ 
+    s(MinsExposedtoAir, k = 3) + 
+    s(at_celsius, k = 3) +
+    s(ln_bodymass, k = 3) + 
+    s(depth, k = 3) + 
+    s(Trawl_duration, k = 3) +
+    s(ln_Aeco, k = 3) +
+    habitat + 
+    s(Species, bs = "re"),# + 
+    #s(Vessel, bs = "re", by = Metier), 
+  family = betar(link = "logit"),
+  data = data_health,
+  method = "REML"
+)
 #For GAMM models, collinearity is called concurvity (nonlinear dependence between smooth terms). Use:
 concurvity(model_quasi, full = FALSE) # High concurvity (>0.8) suggests predictors share too much information.
-#remove Aeco.
+concurvity(model_beta, full = FALSE) # High concurvity (>0.8) suggests predictors share too much information.
+
 
 # 3.2.2.Fit the model as quasibinomial------------------------------------------
 #summary(data_health$Health_prob)
@@ -485,7 +501,7 @@ appraise(model_beta, method = 'simulate')
 
 
 # Variance explained
-summary(model_beta)$dev.expl #55.63%
+summary(model_beta)$dev.expl #55.63% #57.44%
 
 
 
@@ -510,7 +526,7 @@ fix <- summary(gamm_fixed)$dev.expl     # model without random effects
 all <- summary(model_beta)$dev.expl     # model with random effects
 random <- all-fix
 print(paste("Percentage of variance explained by random factors:", round(random * 100/all, 1), "%"))
-# Percentage of variance explained by random factors: 21.8 %
+# Percentage of variance explained by random factors: 21.8 % #21.2%
 
 # 4. Plot the factor effect-----------------------------------------------------
 summary(model_beta)
@@ -519,7 +535,7 @@ summary(model_beta)
 outdir <- paste0('C:/Users/david/OneDrive/Escritorio/PRM_paper/Figures/GAMM4/Health')
 if (!dir.exists(outdir)) dir.create(outdir, recursive = TRUE)
 setwd(outdir)
-jpeg(file = "Health_GAMM_final.jpeg", 
+jpeg(file = "Health_GAMM_final2.jpeg", 
      width = 20, height = 20, units = "cm", res = 600)
 
 #par(mfrow = c(2, 3), pty = "s")  # Ensures a 2x2 grid & square aspect ratio
@@ -703,7 +719,7 @@ print(p_sp)
 #  Save the plot
 path <- paste0(output_data, "/Figures/GAMM/health")
 if (!dir.exists(path)) dir.create(path, recursive = TRUE)
-p_png <- paste0(path, "/Health_spIntercept_final.png")
+p_png <- paste0(path, "/Health_spIntercept_final2.png")
 #ggsave(p_png, p_sp, width = 20, height = 20, units = "cm", dpi = 600)
 #ggsave(p_png, p_sp, width = 16, height = 12, units = "cm", dpi = 300)
 ggsave(p_png, p_sp, width = 13, height = 26, units = "cm", dpi = 600)
@@ -712,7 +728,7 @@ ggsave(p_png, p_sp, width = 13, height = 26, units = "cm", dpi = 600)
 # Extract species-specific random effects from the GAMM
 
 # Extract estimated smooth terms from the GAM model
-smooths_all <- smooth_estimates(gamm_model)
+smooths_all <- smooth_estimates(model_beta)
 unique(smooths_all$.smooth)
 
 # Subset the smooth estimates for the Vessel random effect in Metier1 only
@@ -743,11 +759,6 @@ ggplot(vessel_metier1_smooth, aes(x = Vessel, y = .estimate)) +
     axis.text.y = element_text(size = 10),
     plot.title = element_text(size = 14, face = "bold")
   )
-
-
-
-
-
 
 
 
@@ -887,38 +898,3 @@ beep()  # Optional: make a sound when done (if you use 'beepr' package)
 #RMSE	0 to 1	/ ↓ Lower is better	/ Average error (penalizes big errors)
 #MAE	0 to 1	/ ↓ Lower is better	/ Average absolute error
 #LogLik	Negative (usually)	/ ↑ Higher is better /	Likelihood of observing your data
-
-
-
-
-
-
-
-
-p_sp <- ggplot(ranef_df, aes(x = Species, y = Intercept, fill = Depth, size = bodymass)) + 
-  geom_hline(yintercept = 0, color = "steelblue", size = 2) +
-  geom_point(shape = 21, color = "black", stroke = 0.5) +  # Dark contour, colored fill
-  labs(
-    title = "Random Effects for Species by Depth Range",
-    x = "Species",
-    y = "Deviation from Overall Health Condition",
-    fill = "Depth Range"
-  ) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  theme(
-    panel.grid = element_blank(),
-    axis.line = element_line(color = "black"),
-    axis.ticks = element_line(color = "black")
-    #, aspect.ratio = 1
-  ) +
-  scale_fill_gradientn(colors = color_palette_bathy) +  # Apply the custom color palette
-  scale_size_continuous(range = c(4, 16)) +  # Increase the minimum and maximum point sizes
-  coord_flip()   # Invert the axes for better visualization
-
-# Print the plot
-print(p_sp)
-
-# Save the plot
-p_png <- paste0("Health_spIntercept_GAMM.png")
-ggsave(p_png, p_sp, width = 13, height = 26, units = "cm", dpi = 600)
