@@ -126,9 +126,9 @@ bodymass <- c(
 
 # 3. Make spatial predict for each metier---------------------------------------
 #select depth range:
-bathy_range <- "_bathy_deep" #"_bathy_shallow" #"_bathy_med" #"_bathy_deep"
+bathy_range <- "_bathy_shallow" #"_bathy_shallow" #"_bathy_med" #"_bathy_deep"
 
-for (i in 1:length(dates)) {
+for (i in 152:length(dates)) {
   #i=152
   # Get time information
   date <- dates[i]
@@ -181,8 +181,8 @@ for (i in 1:length(dates)) {
   
   #1st, median, 3rd quartiles for the fixed variables:
   # Define specific (mins, trawl) combinations
-  mins_list <- c(10, 40.71, 55.35)
-  trawl_list <- c(2.85, 3.417, 4.067)
+  mins_list <- c(10) #, 40.71, 55.35
+  trawl_list <- c(2.85) #, 3.417, 4.067
   
   for (sp_fixed in species_list) {
     # Safety check
