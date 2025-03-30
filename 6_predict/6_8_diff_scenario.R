@@ -14,11 +14,12 @@ library(smplot2)
 
 # 1. Set constants --------------------------------------------------------------
 season_vals <- c("Spring", "Winter", "Fall", "Summer", "2021")
+#season_vals <- c("2021")
 
 scenarios <- list(
-  "Favorable" = list(mins = "Mins10", trawl = "Trawl2.9"),
-  "Baseline"  = list(mins = "Mins41", trawl = "Trawl3.4"),
-  "Adverse"   = list(mins = "Mins55", trawl = "Trawl4.1")
+  "Favorable" = list(mins = "Mins10", trawl = "Trawl2.9", color = "#ADD8E6"),   # pastel blue
+  "Baseline"  = list(mins = "Mins41", trawl = "Trawl3.4", color = "#D3D3D3"),   # light grey
+  "Adverse"   = list(mins = "Mins55", trawl = "Trawl4.1", color = "#FA8072")    # pastel red
 )
 
 # 2. Loop through each season ---------------------------------------------------
@@ -51,6 +52,9 @@ for (season in season_vals) {
   # Combine data
   season_data <- bind_rows(data_list)
   
+  # Convert scenario to factor for order
+  season_data$scenario <- factor(season_data$scenario, levels = c("Adverse", "Baseline", "Favorable"))
+  
   # Statistical tests -----------------------------------------------------------
   message("🔍 Running Kruskal-Wallis test for ", season)
   print(kruskal.test(risk ~ scenario, data = season_data))
@@ -59,22 +63,27 @@ for (season in season_vals) {
   print(pairwise.wilcox.test(season_data$risk, season_data$scenario, p.adjust.method = "bonferroni"))
   
   # Plotting --------------------------------------------------------------------
-  p <- ggplot(data = season_data, aes(x = scenario, y = risk)) +
-    geom_violin(aes(fill = scenario), trim = FALSE, alpha = 0.5, color = "transparent") +
-    geom_boxplot(aes(fill = scenario), width = 0.1, outlier.shape = NA) +
+  p <- ggplot(season_data, aes(x = scenario, y = risk, fill = scenario)) +
+    geom_violin(trim = FALSE, alpha = 0.4, color = NA, scale = "width") +  # width-scaled violins
+    geom_boxplot(width = 0.1, outlier.shape = NA, alpha = 1, color = "black", linewidth = 0.3) +
     scale_fill_manual(values = c(
-      "Favorable" = "#ADD8E6",  # pastel blue
-      "Baseline"  = "#D3D3D3",  # pastel grey
-      "Adverse"   = "#FA8072"   # pastel red
+      "Favorable" = scenarios[["Favorable"]]$color,
+      "Baseline"  = scenarios[["Baseline"]]$color,
+      "Adverse"   = scenarios[["Adverse"]]$color
     )) +
     ylab("Mean AVM risk (%)") +
+    xlab("") +
     theme_minimal() +
     theme(
-      axis.title.x = element_blank(),
+      axis.text.x = element_text(size = 11),
+      axis.text.y = element_text(size = 10),
+      axis.title.y = element_text(size = 12),
+      panel.grid.major = element_line(color = "gray90"),
+      panel.grid.minor = element_blank(),
+      panel.border = element_blank(),
+      plot.background = element_blank(),
       legend.position = "none"
-    ) +
-    ggtitle(paste0("Scenario Comparison – ", season))
-  
+    )
   print(p)
   
   # Save output
@@ -82,6 +91,8 @@ for (season in season_vals) {
   if (!dir.exists(outdir)) dir.create(outdir, recursive = TRUE)
   ggsave(file.path(outdir, paste0("AVM_scenarios_", season, ".png")), p, width = 17, height = 10, units = "cm", dpi = 300)
 }
+
+
 
 
 # Results:
