@@ -74,8 +74,8 @@ for (sp in sp_list) {
       MM <- sprintf("%02d", month(date))
       DD <- sprintf("%02d", day(date))
       
-      pat <- paste0(format(date, "%Y%m%d"), "_", sp, "_", bathy, "_", mins, "_", trawl, "_pred.tif")
-      #pat <- paste0(format(date, "%Y%m%d"), "_", sp, "_", bathy, "_", mins, "_", trawl, "_pred_cir.tif")
+      #pat <- paste0(format(date, "%Y%m%d"), "_", sp, "_", bathy, "_", mins, "_", trawl, "_pred.tif")
+      pat <- paste0(format(date, "%Y%m%d"), "_", sp, "_", bathy, "_", mins, "_", trawl, "_pred_cir.tif")
       
       stack_repo <- file.path(output_data, "predict", season, MM)
       
@@ -142,6 +142,7 @@ for (sp in sp_list) {
         clean_name <- gsub("_bathy_shallow", "", layer_name)
         clean_name <- sub("^mean", "crop", clean_name)
         
+        #output_filename <- file.path(product_folder, paste0("mean_bathys_", clean_name, ".tif"))
         output_filename <- file.path(product_folder, paste0("mean_bathys_", clean_name, ".tif"))
         
         tryCatch({
