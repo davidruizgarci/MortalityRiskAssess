@@ -20,8 +20,8 @@ data <- read.csv("temp/final/AVM_allEnviro.csv", sep = ";")
 
 # Constants and fixed values
 season <- "2021"
-mins <- "Mins41" #Mins55 #Mins41 #Mins10
-trawl <- "Trawl3.4" #Trawl4.1 #Trawl3.4 #Trawl2.9
+mins <- "Mins10" #Mins55 #Mins41 #Mins10
+trawl <- "Trawl2.9" #Trawl4.1 #Trawl3.4 #Trawl2.9
 sp_list <- unique(data$Species)
 sp_list
 
