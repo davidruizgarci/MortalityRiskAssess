@@ -49,7 +49,11 @@ sp_list <- unique(data$Species)
 sp_list
 
 season <- "2021"  # Or set dynamically
+<<<<<<< HEAD
+mins <- "Mins29" #Mins55 - #Mins41 - #Mins10 - #Mins29
+=======
 mins <- "Mins29" #Mins55 - #Mins41 - #Mins10 #Mins29
+>>>>>>> a31060d6a864d53562999f7a967e6242eee5755b
 trawl <- "Trawl2.9" #Trawl4.1 - #Trawl3.4 - #Trawl2.9
 bathy_types <- c("bathy_shallow", "bathy_med", "bathy_deep")
 
@@ -74,8 +78,8 @@ for (sp in sp_list) {
       MM <- sprintf("%02d", month(date))
       DD <- sprintf("%02d", day(date))
       
-      #pat <- paste0(format(date, "%Y%m%d"), "_", sp, "_", bathy, "_", mins, "_", trawl, "_pred.tif")
-      pat <- paste0(format(date, "%Y%m%d"), "_", sp, "_", bathy, "_", mins, "_", trawl, "_pred_cir.tif")
+      pat <- paste0(format(date, "%Y%m%d"), "_", sp, "_", bathy, "_", mins, "_", trawl, "_pred.tif")
+      #pat <- paste0(format(date, "%Y%m%d"), "_", sp, "_", bathy, "_", mins, "_", trawl, "_pred_cir.tif")
       
       stack_repo <- file.path(output_data, "predict", season, MM)
       
@@ -142,8 +146,8 @@ for (sp in sp_list) {
         clean_name <- gsub("_bathy_shallow", "", layer_name)
         clean_name <- sub("^mean", "crop", clean_name)
         
-        #output_filename <- file.path(product_folder, paste0("mean_bathys_", clean_name, ".tif"))
         output_filename <- file.path(product_folder, paste0("mean_bathys_", clean_name, ".tif"))
+        #output_filename <- file.path(product_folder, paste0("mean_bathys_", clean_name, ".tif"))
         
         tryCatch({
           writeRaster(result_raster, filename = output_filename, format = "GTiff", overwrite = TRUE)
