@@ -49,7 +49,11 @@ sp_list <- unique(data$Species)
 sp_list
 
 season <- "2021"  # Or set dynamically
+<<<<<<< HEAD
 mins <- "Mins29" #Mins55 - #Mins41 - #Mins10 - #Mins29
+=======
+mins <- "Mins29" #Mins55 - #Mins41 - #Mins10 #Mins29
+>>>>>>> a31060d6a864d53562999f7a967e6242eee5755b
 trawl <- "Trawl2.9" #Trawl4.1 - #Trawl3.4 - #Trawl2.9
 bathy_types <- c("bathy_shallow", "bathy_med", "bathy_deep")
 
