@@ -16,7 +16,7 @@ library(smplot2)
 # Define seasons and input path
 season_vals <- c("Spring", "Winter", "Fall", "Summer")
 
-mins <- "Mins10" #Mins55 #Mins41 #Mins10
+mins <- "Mins29" #Mins55 #Mins41 #Mins10
 trawl <- "Trawl2.9" #Trawl4.1 #Trawl3.4 #Trawl2.9
 indir <- file.path(output_data, "predict_across_sp", "2021", paste0(mins, "_", trawl))
 

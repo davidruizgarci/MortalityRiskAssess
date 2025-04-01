@@ -17,9 +17,10 @@ season_vals <- c("Spring", "Winter", "Fall", "Summer", "2021")
 #season_vals <- c("2021")
 
 scenarios <- list(
-  "Favorable" = list(mins = "Mins10", trawl = "Trawl2.9", color = "#ADD8E6"),   # pastel blue
-  "Baseline"  = list(mins = "Mins41", trawl = "Trawl3.4", color = "#D3D3D3"),   # light grey
-  "Adverse"   = list(mins = "Mins55", trawl = "Trawl4.1", color = "#FA8072")    # pastel red
+  "Optimal" = list(mins = "Mins10", trawl = "Trawl2.9", color = "#B2E2B2"),   # pastel green
+  "Favorable" = list(mins = "Mins29", trawl = "Trawl2.9", color = "#B3DDF2"), # softened blue (more pastel)
+  "Baseline"  = list(mins = "Mins41", trawl = "Trawl3.4", color = "#E0E0E0"), # slightly lighter grey
+  "Adverse"   = list(mins = "Mins55", trawl = "Trawl4.1", color = "#F4A6A6")  # softened pastel red
 )
 
 # 2. Loop through each season ---------------------------------------------------
