@@ -17,10 +17,12 @@ season_vals <- c("Spring", "Winter", "Fall", "Summer", "2021")
 #season_vals <- c("2021")
 
 scenarios <- list(
-  "Favorable" = list(mins = "Mins10", trawl = "Trawl2.9", color = "#ADD8E6"),   # pastel blue
+  "Optimal" = list(mins = "Mins10", trawl = "Trawl2.9", color = "#B2E2B2"),   # pastel blue
+  "Favorable" = list(mins = "Mins29", trawl = "Trawl2.9", color = "#ADD8E6"),   # pastel blue
   "Baseline"  = list(mins = "Mins41", trawl = "Trawl3.4", color = "#D3D3D3"),   # light grey
   "Adverse"   = list(mins = "Mins55", trawl = "Trawl4.1", color = "#FA8072")    # pastel red
 )
+
 
 # 2. Loop through each season ---------------------------------------------------
 for (season in season_vals) {
@@ -53,7 +55,7 @@ for (season in season_vals) {
   season_data <- bind_rows(data_list)
   
   # Convert scenario to factor for order
-  season_data$scenario <- factor(season_data$scenario, levels = c("Adverse", "Baseline", "Favorable"))
+  season_data$scenario <- factor(season_data$scenario, levels = c("Adverse", "Baseline", "Favorable", "Optimal"))
   
   # Statistical tests -----------------------------------------------------------
   message("🔍 Running Kruskal-Wallis test for ", season)
@@ -67,6 +69,7 @@ for (season in season_vals) {
     geom_violin(trim = FALSE, alpha = 0.4, color = NA, scale = "width") +  # width-scaled violins
     geom_boxplot(width = 0.1, outlier.shape = NA, alpha = 1, color = "black", linewidth = 0.3) +
     scale_fill_manual(values = c(
+      "Optimal" = scenarios[["Optimal"]]$color,
       "Favorable" = scenarios[["Favorable"]]$color,
       "Baseline"  = scenarios[["Baseline"]]$color,
       "Adverse"   = scenarios[["Adverse"]]$color
@@ -78,7 +81,8 @@ for (season in season_vals) {
       axis.text.x = element_text(size = 11),
       axis.text.y = element_text(size = 10),
       axis.title.y = element_text(size = 12),
-      panel.grid.major = element_line(color = "gray90"),
+      #panel.grid.major = element_line(color = "gray90"),
+      panel.grid.major = element_blank(),
       panel.grid.minor = element_blank(),
       panel.border = element_blank(),
       plot.background = element_blank(),

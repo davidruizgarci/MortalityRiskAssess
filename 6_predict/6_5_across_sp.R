@@ -11,8 +11,8 @@
 data <- read.csv("temp/final/AVM_allEnviro.csv", sep = ";") 
 
 # Constants and fixed values
-mins <- "Mins55" #Mins55 #Mins41 #Mins10
-trawl <- "Trawl4.1" #Trawl4.1 #Trawl3.4 #Trawl2.9
+mins <- "Mins29" #Mins55 #Mins41 #Mins10
+trawl <- "Trawl2.9" #Trawl4.1 #Trawl3.4 #Trawl2.9
 sp_list <- unique(data$Species)
 sp_list
 season_vals <- c("2021", "Spring", "Winter", "Fall", "Summer")

@@ -6,6 +6,7 @@
 #-------------------------------------------------------------------------------
 # 6_6_plot_pred  Plot the predicted AVM risk maps
 #-------------------------------------------------------------------------------
+library(ggplot2)
 
 #1. Set data repository---------------------------------------------------------
 # 1.1. dataset------------------------------------------------------------------
@@ -13,8 +14,8 @@ data <- read.csv("temp/final/AVM_allEnviro.csv", sep = ";")
 
 # Constants and fixed values
 season <- "2021"
-mins <- "Mins55" #Mins55 #Mins41 #Mins10
-trawl <- "Trawl4.1" #Trawl4.1 #Trawl3.4 #Trawl2.9
+mins <- "Mins29" #Mins55 #Mins41 #Mins10 #Mins29
+trawl <- "Trawl2.9" #Trawl4.1 #Trawl3.4 #Trawl2.9
 sp_list <- unique(data$Species)
 sp_list
 season_vals <- c("2021", "Spring", "Winter", "Fall", "Summer")

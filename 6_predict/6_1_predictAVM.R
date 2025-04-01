@@ -122,14 +122,14 @@ bodymass <- c(
   "Tmarmorata" = 5.463831805
 )
 
-############### since "2021-06-01" i=152 dates[152] =  mins_list <- 55.35 trawl_list <-  4.067 
+############### since "2021-10-06"" i=152 dates[152] =  mins_list <- 55.35 trawl_list <-  4.067 
 
 # 3. Make spatial predict for each metier---------------------------------------
 #select depth range:
-bathy_range <- "_bathy_shallow" #"_bathy_shallow" #"_bathy_med" #"_bathy_deep"
+bathy_range <- "_bathy_deep" #"_bathy_shallow" #"_bathy_med" #"_bathy_deep"
 
-for (i in 152:length(dates)) {
-  #i=152
+for (i in 1:length(dates)) {
+  #i=279
   # Get time information
   date <- dates[i]
   print(date)
