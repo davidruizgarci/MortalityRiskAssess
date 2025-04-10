@@ -1,6 +1,6 @@
 # ------------------------------------------------------------------------------
 
-# Title: Small-sized and deepwater chondrichthyans face increased mortality risk in bottom trawling
+# Title: Mortality risk assessment reveals bycatch mitigation priorities for chondrichthyans in a trawl fishery
 
 #-------------------------------------------------------------------------------
 # 5.2. GAMM for AVM rates
@@ -167,6 +167,18 @@ hist(data$ln_bodymass)
 shapiro.test(data$ln_bodymass)
 #scale
 data$sln_bodymass<-scale(data$ln_bodymass)
+
+summary_stats <- data %>%
+  dplyr::group_by(Species) %>%
+  summarise(
+    mean_bodymass = mean(bodymass, na.rm = TRUE),
+    sd_bodymass = sd(bodymass, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(mean_sd = paste0(round(mean_bodymass, 2), " ± ", round(sd_bodymass, 2)))
+
+print(summary_stats)
+
 
 #Depth
 hist(data$depth)

@@ -1,6 +1,6 @@
 # ------------------------------------------------------------------------------
 
-# Title: Small-sized and deepwater chondrichthyans face increased mortality risk in bottom trawling
+# Title: Mortality risk assessment reveals bycatch mitigation priorities for chondrichthyans in a trawl fishery
 
 #-------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------
