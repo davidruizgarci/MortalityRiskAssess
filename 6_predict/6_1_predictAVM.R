@@ -62,7 +62,7 @@ print(bathy)
 # plot(bathy)
 # Filter the values between -50 and -600 and set values outside the range to NA
 bathy_filtered <- calc(bathy, function(x) {
-  x[x > -1 | x < -800] <- NA  # Set values outside the range to NA
+  x[x >= -0 | x <= -800] <- NA  # Set values outside the range to NA
   return(x)
 })
 
@@ -98,6 +98,7 @@ bathy_mask_resampled <- crop(bathy_mask_resampled, e)
 
 # 2. Load model-----------------------------------------------------------------
 path <- paste0(output_data, "/model/AVM/AVM_GAMM.rds")
+path <- paste0(output_data, "/model/AVM/AVM_GAMM_interaction.rds")
 gamm_model <- readRDS(path)
 summary(gamm_model)
 
@@ -155,6 +156,7 @@ for (i in 1:length(dates)) {
   s <- s + 0
   s <- crop(s, e)
   s <- raster::mask(s, bathy_mask_resampled)
+  #plot(s)
   
   # Fix units and variable names
   s$atm_temp <- s$atm_temp - 273.15
@@ -194,7 +196,7 @@ for (i in 1:length(dates)) {
     ln_bodymass_r <- s[[1]]; values(ln_bodymass_r) <- bm_value
     
     for (k in seq_along(mins_list)) {
-      #k <- seq_along(mins_list)[2]
+      #k <- seq_along(mins_list)[1]
       mins_val <- mins_list[k]
       trawl_val <- trawl_list[k]
      
@@ -270,8 +272,8 @@ for (i in 1:length(dates)) {
     #trawl_val <-  trawl_list[3]
     
     base_name <- paste0(format(date, "%Y%m%d"), "_", sp_fixed, select, "_", combo_label)
-    writeRaster(pred_med, file.path(product_folder, paste0(base_name, "_pred.tif")), overwrite = TRUE)
-    writeRaster(pred_cir, file.path(product_folder, paste0(base_name, "_pred_cir.tif")), overwrite = TRUE)
+    writeRaster(pred_med, file.path(product_folder, paste0(base_name, "_INTER_pred.tif")), overwrite = TRUE)
+    writeRaster(pred_cir, file.path(product_folder, paste0(base_name, "_INTER_pred_cir.tif")), overwrite = TRUE)
     
     # Export PNGs
     #png(file.path(product_folder, paste0(base_name, "_pred.png")), width = 560, height = 600, res = 100)
