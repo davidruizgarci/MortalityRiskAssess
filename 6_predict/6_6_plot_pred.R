@@ -14,8 +14,8 @@ data <- read.csv("temp/final/AVM_allEnviro.csv", sep = ";")
 
 # Constants and fixed values
 season <- "2021"
-mins <- "Mins29" #Mins55 #Mins41 #Mins10 #Mins29
-trawl <- "Trawl2.9" #Trawl4.1 #Trawl3.4 #Trawl2.9
+mins <- "Mins55" #Mins55 #Mins41 #Mins10 #Mins29
+trawl <- "Trawl4.1" #Trawl4.1 #Trawl3.4 #Trawl2.9
 sp_list <- unique(data$Species)
 sp_list
 season_vals <- c("2021", "Spring", "Winter", "Fall", "Summer")
@@ -55,10 +55,10 @@ print(GSA_filtered)
 # 1.4. Predicted habitat--------------------------------------------------------
 sp <- sp_list[1]
 indir <- file.path(output_data, "predict_across_sp", "2021", paste0(mins, "_", trawl))
-file <- paste0(indir, "/", season, "_across_sp_pred_mean.tif")
+file <- paste0(indir, "/", season, "_across_sp_pred_mean_INTER1.tif")
 risk <- raster(file)
 print(risk)
-file_sd <- paste0(indir, "/", season, "_across_sp_pred_sd.tif")
+file_sd <- paste0(indir, "/", season, "_across_sp_pred_sd_INTER1.tif")
 risk_sd <- raster(file)
 print(risk_sd)
 
@@ -70,12 +70,13 @@ st_crs(GSA_filtered) <- st_crs(mask)
 
 # 2. Loop to create maps--------------------------------------------------------
 for (season in season_vals) {
+  #season <- season_vals[1]
   message("📅 Starting maps for season: ", season)
   
   # Define file paths
   indir <- file.path(output_data, "predict_across_sp", "2021", paste0(mins, "_", trawl))
-  file_mean <- file.path(indir, paste0(season, "_across_sp_pred_mean.tif"))
-  file_sd   <- file.path(indir, paste0(season, "_across_sp_pred_sd.tif"))
+  file_mean <- file.path(indir, paste0(season, "_across_sp_pred_mean_INTER1.tif"))
+  file_sd   <- file.path(indir, paste0(season, "_across_sp_pred_sd_INTER1.tif"))
   
   if (!file.exists(file_mean) || !file.exists(file_sd)) {
     message("⚠️ Missing files for ", season, ", skipping...")
@@ -126,7 +127,7 @@ for (season in season_vals) {
     # Save
     outdir <- file.path(output_data, "fig/Map", paste0(mins, "_", trawl), season)
     if (!dir.exists(outdir)) dir.create(outdir, recursive = TRUE)
-    p_png <- file.path(outdir, paste0(season, "_risk_", metric, ".png"))
+    p_png <- file.path(outdir, paste0(season, "_risk_", metric, "_INTER1.png"))
     ggsave(p_png, p, width = 20, height = 20, units = "cm", dpi = 1800)
     message("✅ Saved ", metric, " map: ", p_png)
   }

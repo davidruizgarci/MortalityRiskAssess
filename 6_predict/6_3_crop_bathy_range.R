@@ -22,22 +22,23 @@ data <- read.csv("temp/final/AVM_allEnviro.csv", sep = ";")
 # 1.2. subset:
 # Constants and fixed values
 season <- "2021"
-mins <- "Mins29" #Mins55 - #Mins41 - #Mins10 - #Mins29
-trawl <- "Trawl2.9" #Trawl4.1 - #Trawl3.4 - #Trawl2.9
+mins <- "Mins55" #Mins55 - #Mins41 - #Mins10 - #Mins29
+trawl <- "Trawl4.1" #Trawl4.1 - #Trawl3.4 - #Trawl2.9
 sp_list <- unique(data$Species)
 sp_list
 
 # select only few species if needed:
 #sp_list <- sp_list[!sp_list %in% c(
 #  "Rpolystigma", "Gmelastomus", "Scanicula",
-#  "Espinax", "Tmarmorata", "Cuyato", "Hgriseus")]
+#  "Espinax", "Tmarmorata", "Cuyato", "Hgriseus", 
+#  "Rclavata", "Dlicha", "Rasterias", "Ocentrina", "Dpastinaca", "Doxyrinchus")]
 
 # select only one species if needed:
-#sp_list <-  c("Hgriseus")
+#sp_list <-  c("Doxyrinchus")
 
 # 1.3. Create dates
 date_start <- as.Date("2021-01-01") 
-date_end <- as.Date("2021-12-31")
+date_end <- as.Date("2021-01-02")
 
 #subset dates if needed:
 # date_start <- as.Date("2021-12-12") 
@@ -91,7 +92,7 @@ for (sp in sp_list) {
     date_str <- format(date, "%Y%m%d")
     
     # File pattern and folder
-    pat <- paste0("^mean_bathys_X", date_str, "_", sp, "_", mins, "_", trawl, "_pred\\.tif$")
+    pat <- paste0("^mean_bathys_X", date_str, "_", sp, "_", mins, "_", trawl, "_INTER1_pred_INTER1_\\.tif$")
     #pat <- paste0("^mean_bathys_X", date_str, "_", sp, "_", mins, "_", trawl, "_pred_cir\\.tif$")
 
     stack_repo <- file.path(indir, YYYY, MM)
@@ -117,7 +118,7 @@ for (sp in sp_list) {
         product_folder <- file.path(outdir, MM)
         if (!dir.exists(product_folder)) dir.create(product_folder, recursive = TRUE)
         
-        clean_name <- paste0("crop_bathys_X", date_str, "_", sp, "_", mins, "_", trawl, "_pred.tif")
+        clean_name <- paste0("crop_bathys_X", date_str, "_", sp, "_", mins, "_", trawl, "_pred_INTER1.tif")
         output_file <- file.path(product_folder, clean_name)
         
         tryCatch({

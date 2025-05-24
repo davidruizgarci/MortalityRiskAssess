@@ -11,8 +11,8 @@
 data <- read.csv("temp/final/AVM_allEnviro.csv", sep = ";") 
 
 # Constants and fixed values
-mins <- "Mins29" #Mins55 #Mins41 #Mins10
-trawl <- "Trawl2.9" #Trawl4.1 #Trawl3.4 #Trawl2.9
+mins <- "Mins55" #Mins55 #Mins41 #Mins10
+trawl <- "Trawl4.1" #Trawl4.1 #Trawl3.4 #Trawl2.9
 sp_list <- unique(data$Species)
 sp_list
 season_vals <- c("2021", "Spring", "Winter", "Fall", "Summer")
@@ -32,15 +32,17 @@ print(mask)
 
 # Calculate mean +- SD across species for all seasons:
 for (season_val in season_vals) {
+  #season_val <- season_vals[1]
   message("📅 --- Season:", season_val)
   
   stack_list <- list()  # Collect rasters for ALL species here
   
   for (sp in sp_list) {
+    #sp <- sp_list[1]
     message("🔁 Processing species: ", sp)
     
     indir <- file.path(output_data, "predict_overall", "2021", sp, paste0(mins, "_", trawl))
-    pat <- paste0(season_val, "_pred_median.tif")
+    pat <- paste0(season_val, "_pred_median_INTER1.tif")
     
     tiffile <- list.files(indir, recursive = TRUE, full.names = TRUE, pattern = pat)
     
@@ -78,21 +80,21 @@ for (season_val in season_vals) {
   if (!dir.exists(outdir)) dir.create(outdir, recursive = TRUE)
   
   # Save TIFFs
-  writeRaster(pred_mean, filename = file.path(outdir, paste0(season_val, "_across_sp_pred_mean.tif")),
+  writeRaster(pred_mean, filename = file.path(outdir, paste0(season_val, "_across_sp_pred_mean_INTER1.tif")),
               format = "GTiff", overwrite = TRUE)
-  writeRaster(pred_sd, filename = file.path(outdir, paste0(season_val, "_across_sp_pred_sd.tif")),
+  writeRaster(pred_sd, filename = file.path(outdir, paste0(season_val, "_across_sp_pred_sd_INTER1.tif")),
               format = "GTiff", overwrite = TRUE)
   
   message("💾 Saved rasters for season ", season_val)
   
   # Optional PNGs
-  png(file.path(outdir, paste0(season_val, "_across_sp_pred_mean.png")), width = 560, height = 600, res = 100)
+  png(file.path(outdir, paste0(season_val, "_across_sp_pred_mean_INTER1.png")), width = 560, height = 600, res = 100)
   plot(pred_mean, main = paste("Mean Prediction\n", season_val), col = viridis::viridis(100))
   plot(mask, col = "grey80", border = "grey60", add = TRUE)
   box()
   dev.off()
   
-  png(file.path(outdir, paste0(season_val, "_across_sp_pred_sd.png")), width = 560, height = 600, res = 100)
+  png(file.path(outdir, paste0(season_val, "_across_sp_pred_sd_INTER1.png")), width = 560, height = 600, res = 100)
   plot(pred_sd, main = paste("Prediction SD\n", season_val), col = viridis::viridis(100))
   plot(mask, col = "grey80", border = "grey60", add = TRUE)
   box()

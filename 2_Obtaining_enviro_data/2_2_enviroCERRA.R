@@ -70,7 +70,7 @@ for (i in 1:nrow(catalog)) {
         year = dates$Year[j],
         month = dates$Month[j],
         day = dates$Day[j],
-        time = dates$Hour[j],  # e.g., "11:00"
+        time = dates$Hour[j],  # e.g., "12:00"
         area = c(43, -2, 36, 4),  # N, W, S, E (Western Mediterranean)
         format = "netcdf"
       ),

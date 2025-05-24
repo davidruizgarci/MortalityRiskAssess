@@ -24,6 +24,7 @@ data <- data %>%
 summary(data$MinsExposedtoAir)
 summary(data$Trawl_duration)
 
+
 #indir <- paste(output_data, mod_code, paste0(genus, type, "_", family), sep="/")
 
 outdir <- paste0(output_data, "/predict")
@@ -74,13 +75,14 @@ bathy_mask <- calc(bathy_filtered, function(x) {
 
 # Load one of the stacks as example to match features:
 date <- dates[1]
-pat <- paste0( "stack_", format(date, "%Y%m%d"), ".grd")
+pat <- paste0( "stack_", format(date, "%Y%m%d"), "_bathy_shallow.grd")
 # Get list of all month folders
 stack_repo <- paste0("output/ERA5/AT_Reanalysis/2021/01/01")
 grdfile <- list.files(stack_repo, recursive = TRUE, full.names = TRUE, pattern = pat)
 s <- raster::stack(grdfile)
 s <- s+0
 s <- crop(s, e)
+s
 #plot(s)
 
 #remove (mask out) all areas of a raster (bathy_mask) that overlap with polygons in a vector layer (mask).
@@ -97,8 +99,10 @@ bathy_mask_resampled <- crop(bathy_mask_resampled, e)
 
 
 # 2. Load model-----------------------------------------------------------------
-path <- paste0(output_data, "/model/AVM/AVM_GAMM.rds")
-path <- paste0(output_data, "/model/AVM/AVM_GAMM_interaction.rds")
+#path <- paste0(output_data, "/model/AVM/AVM_GAMM.rds")
+#path <- paste0(output_data, "/model/AVM/AVM_GAMM_interaction.rds")
+#path <- paste0(output_data, "/model/AVM/AVM_GAMM_nodepth.rds")
+path <- paste0(output_data, "/model/AVM/AVM_GAMM_INTER1.rds")
 gamm_model <- readRDS(path)
 summary(gamm_model)
 
@@ -127,7 +131,7 @@ bodymass <- c(
 
 # 3. Make spatial predict for each metier---------------------------------------
 #select depth range:
-bathy_range <- "_bathy_deep" #"_bathy_shallow" #"_bathy_med" #"_bathy_deep"
+bathy_range <- "_bathy_shallow" #"_bathy_shallow" #"_bathy_med" #"_bathy_deep"
 
 for (i in 1:length(dates)) {
   #i=279
@@ -183,8 +187,8 @@ for (i in 1:length(dates)) {
   
   #1st, median, 3rd quartiles for the fixed variables:
   # Define specific (mins, trawl) combinations
-  mins_list <- c(28.71) #10, 28.71, 40.71, 55.35
-  trawl_list <- c(2.85) #2.85, 3.417, 4.067
+  mins_list <- c(55.35) #10, 28.71, 40.71, 55.35
+  trawl_list <- c(4.067) #2.85, 3.417, 4.067
   
   for (sp_fixed in species_list) {
     # Safety check
@@ -272,8 +276,8 @@ for (i in 1:length(dates)) {
     #trawl_val <-  trawl_list[3]
     
     base_name <- paste0(format(date, "%Y%m%d"), "_", sp_fixed, select, "_", combo_label)
-    writeRaster(pred_med, file.path(product_folder, paste0(base_name, "_INTER_pred.tif")), overwrite = TRUE)
-    writeRaster(pred_cir, file.path(product_folder, paste0(base_name, "_INTER_pred_cir.tif")), overwrite = TRUE)
+    writeRaster(pred_med, file.path(product_folder, paste0(base_name, "_INTER1_pred.tif")), overwrite = TRUE)
+    writeRaster(pred_cir, file.path(product_folder, paste0(base_name, "_INTER1_pred_cir.tif")), overwrite = TRUE)
     
     # Export PNGs
     #png(file.path(product_folder, paste0(base_name, "_pred.png")), width = 560, height = 600, res = 100)

@@ -30,6 +30,7 @@ data <- data %>%
     numericSp = as.factor(ifelse(Species == "RajaSp", "Rclavata", Species)))  # Replace RajaSp with Rclavata
 str(data)
 
+
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 #How many specimens and species are there in total?
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
@@ -483,3 +484,33 @@ print(p_health)
 # export plot
 p_png <- paste0(output_data, "/Health_Overall_FINAL.png")
 ggsave(p_png, p_health, width=7, height=12, units="cm", dpi=600)
+
+
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+#How many specimens fall within each health category across species?
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+data <- data %>%
+  mutate(
+    Health_prob = as.numeric(gsub(",", ".", Health_prob))
+  )
+
+summary(data$Health_prob)
+
+# Define health condition categories
+data$Health_category <- cut(
+  data$Health_prob,
+  breaks = c(-Inf, 0.25, 0.50, 0.75, Inf),
+  labels = c("critical", "compromised", "moderate", "good"),
+  right = TRUE
+)
+
+# Count the number of specimens in each category
+category_counts <- table(data$Health_category)
+
+# Calculate percentages
+category_percentages <- prop.table(category_counts) * 100
+
+# View results
+category_counts
+round(category_percentages, 1)

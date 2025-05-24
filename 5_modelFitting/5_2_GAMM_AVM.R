@@ -444,7 +444,7 @@ plot(gamm_model$gam, pages = 1)
 
 
 # Fit the full model using gam():
-gamm_model <- gam(
+gamm_model <- gam(    #1782.687
   Alive_Dead ~ 
     s(ln_bodymass, k=3) + 
     s(at_celsius, k=3) +
@@ -459,8 +459,24 @@ gamm_model <- gam(
   data = data,
   method = "REML")
 
+gamm_model <- gam(   
+  Alive_Dead ~ 
+    s(ln_bodymass, k=3) + 
+    s(at_celsius, k=3) +
+    s(MinsExposedtoAir, k=3) + 
+    s(Trawl_duration, k=3) +
+    #s(depth, k=3) + 
+    #te(MinsExposedtoAir, Trawl_duration, k = c(3, 3)) +  # interaction term
+    te(ln_bodymass, at_celsius, k = c(3, 3)) +  # interaction term
+    s(Species, bs = "re") +  # Random effect for species
+    #s(Vessel, bs = "re"),
+    s(Vessel, bs = "re", by = Metier),
+  family = binomial(link = "logit"),  
+  data = data,
+  method = "REML")
+
 summary(gamm_model)         
-AIC(gamm_model)             
+AIC(gamm_model)       #1783.253 #1764.692
 draw(gamm_model, scales = 'free')
 #plot(gamm_model, pages = 1) 
 #gam.check(gamm_model)
@@ -472,7 +488,8 @@ summary(gamm_model)$dev.expl #55.32%
 # Save the model:
 path <- paste0(output_data, "/model/AVM")
 if (!dir.exists(path)) dir.create(path, recursive = TRUE)
-file_name <- paste0(path, "/AVM_GAMM.rds")
+file_name <- paste0(path, "/AVM_GAMM_INTER1.rds")
+#file_name <- paste0(path, "/AVM_GAMM_interaction.rds")
 saveRDS(gamm_model, file = file_name)
 
 
@@ -487,23 +504,24 @@ saveRDS(gamm_model, file = file_name)
 #  labs(x = "Predicted Probability", y = "Observed Alive_Dead", title = "Predicted vs. Observed")
 
 # Check the variance explained by the random factors:
-gamm_fixed <- gam(
+gamm_fixed <- gam(   # 18.3 %
   Alive_Dead ~ 
-    s(ln_bodymass, k = 3) + 
-    s(at_celsius, k = 3) + 
-    s(MinsExposedtoAir, k = 3) +
-    s(Trawl_duration, k = 3) +
-    s(depth, k = 3),
-  family = binomial(link = "logit"),
+    s(ln_bodymass, k=3) + 
+    s(at_celsius, k=3) +
+    s(MinsExposedtoAir, k=3) + 
+    s(Trawl_duration, k=3) +
+    #s(depth, k=3) + 
+    #te(MinsExposedtoAir, Trawl_duration, k = c(3, 3)) +  # interaction term
+    te(ln_bodymass, at_celsius, k = c(3, 3)),
+  family = binomial(link = "logit"),  
   data = data,
-  method = "REML"
-)
+  method = "REML")
 
 fix <- summary(gamm_fixed)$dev.expl     # model without random effects
 all <- summary(gamm_model)$dev.expl     # model with random effects
 random <- all-fix
 print(paste("Percentage of variance explained by random factors:", round(random * 100/all, 1), "%"))
-# Percentage of variance explained by random factors: 21.5%
+# Percentage of variance explained by random factors: 21.5% 
 
 
 # 4. Plot the factor effect-----------------------------------------------------
@@ -513,7 +531,7 @@ summary(gamm_model)
 outdir <- paste0('C:/Users/david/OneDrive/Escritorio/PRM_paper/Figures/GAMM4/AVM')
 if (!dir.exists(outdir)) dir.create(outdir, recursive = TRUE)
 setwd(outdir)
-jpeg(file = "AVM_GAMM_final.jpeg", 
+jpeg(file = "AVM_GAMM_final_interaction.jpeg", 
      width = 20, height = 20, units = "cm", res = 600)
 
 #par(mfrow = c(2, 3), pty = "s")  # Ensures a 2x2 grid & square aspect ratio
@@ -530,7 +548,6 @@ b <- getViz(gamm_model)
 print(plot(b), pages = 1)
 
 dev.off()
-
 
 # Check interactions:
 #par(mfrow = c(1, 1))
@@ -724,6 +741,8 @@ unique(smooths_all$.smooth)
 vessel_metier1_smooth <- smooths_all %>%
   filter(.smooth == "s(Vessel):Metier1")
 
+mean(vessel_metier1_smooth$.estimate)
+
 # Plot the random effects for vessels (Metier1 only)
 ggplot(vessel_metier1_smooth, aes(x = Vessel, y = .estimate)) +
   # Add a horizontal line at 0 for reference (neutral effect)
@@ -752,6 +771,35 @@ ggplot(vessel_metier1_smooth, aes(x = Vessel, y = .estimate)) +
 
 
 
+vessel_smooth <- smooths_all %>%
+  filter(.smooth == "s(Vessel)")
+# Plot the random effects for vessels (Metier1 only)
+ggplot(vessel_smooth, aes(x = Vessel, y = .estimate)) +
+  # Add a horizontal line at 0 for reference (neutral effect)
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  # Plot the vessel random effect as points (log-odds scale)
+  geom_point(shape = 21, size = 4, fill = "darkorange", color = "black") +
+  # Add error bars showing ±1 SE around the estimate
+  geom_errorbar(aes(ymin = .estimate - .se, ymax = .estimate + .se), width = 0.2) +
+  # Add vessel names as labels next to the points
+  geom_text(aes(label = Vessel), hjust = -0.2, size = 3.5) +
+  # Flip the axes to make it horizontal (vessels on y-axis)
+  coord_flip() +
+  # Add title and axis labels
+  labs(
+    title = "Random Effects for Vessels in Metier1",
+    y = "Effect (log-odds scale)",
+    x = "Vessel"
+  ) +
+  theme_minimal() +
+  # Optional: Improve axis text readability
+  theme(
+    axis.text.y = element_text(size = 10),
+    plot.title = element_text(size = 14, face = "bold")
+  )
+
+
+
 
 
 
@@ -761,156 +809,156 @@ set.seed(123)  # Ensure reproducibility
 
 #6.1. Create folds--------------------------------------------------------------
 # Function to assign folds while ensuring all species are in all folds
-assign_folds <- function(species_data) {
-  num_obs <- nrow(species_data)
-  
-  if (num_obs < 5) {
-    # Replicate rows with replacement until the species has at least 5 rows
-    species_data <- species_data %>%
-      dplyr::slice(sample(1:num_obs, size = 5, replace = TRUE))
-    
-    # Assign folds sequentially to ensure at least one instance in each fold
-    species_data$fold <- rep(1:5, length.out = nrow(species_data))
-    
-  } else {
-    # Assign folds proportionally using stratified 5-fold cross-validation
-    species_data$fold <- sample(rep(1:5, length.out = num_obs))  # Ensure balanced assignment
-  }
-  
-  return(species_data)
-}
-
-# Apply the function to each species group
-data <- data %>%
-  group_by(Species) %>%
-  group_modify(~ assign_folds(.x)) %>%
-  ungroup()
-
-# Check fold distribution
-species_fold_distribution <- data %>%
-  group_by(Species, fold) %>%
-  summarise(count = n(), .groups = "drop")
-
-print(species_fold_distribution)  # Verify fold assignment
+#assign_folds <- function(species_data) {
+#  num_obs <- nrow(species_data)
+#  
+#  if (num_obs < 5) {
+#    # Replicate rows with replacement until the species has at least 5 rows
+#    species_data <- species_data %>%
+#      dplyr::slice(sample(1:num_obs, size = 5, replace = TRUE))
+#    
+#    # Assign folds sequentially to ensure at least one instance in each fold
+#    species_data$fold <- rep(1:5, length.out = nrow(species_data))
+#    
+#  } else {
+#    # Assign folds proportionally using stratified 5-fold cross-validation
+#    species_data$fold <- sample(rep(1:5, length.out = num_obs))  # Ensure balanced assignment
+#  }
+#  
+#  return(species_data)
+#}
+#
+## Apply the function to each species group
+#data <- data %>%
+#  group_by(Species) %>%
+#  group_modify(~ assign_folds(.x)) %>%
+#  ungroup()
+#
+## Check fold distribution
+#species_fold_distribution <- data %>%
+#  group_by(Species, fold) %>%
+#  summarise(count = n(), .groups = "drop")
+#
+#print(species_fold_distribution)  # Verify fold assignment
 
 
 
 
 # 6.2. Fit the model in a cross-validation process------------------------------
 # Create an empty list to store AUC results per species
-auc_results <- list()
-test_predictions <- list()  # Store actual test data for ROC
-
-  # Perform 5-fold cross-validation
-  for (f in 1:5) {
-    #f=2
-    # Split data into training and testing sets
-    train_data <- data %>% filter(fold != f)
-    test_data <- data %>% filter(fold == f)
-    
-    # Fit GAMM model on training data
-    # gamm4:
-    # gamm_model <- gamm4::gamm4(
-    #   Alive_Dead ~ 
-    #     s(sMinsExposedtoAir) + 
-    #     s(sdepth) +  
-    #     s(sln_bodymass) + 
-    #     s(sat_celsius) +  
-    #     habitat +
-    #    s(sTrawl_duration), # +  
-    #   #s(sln_Aeco),
-    #   random = ~ (1 | Species),  # Corrected random effect formula
-    #   family = binomial(link = "logit"),  # Corrected family specification
-    #   data = train_data,  # Explicitly define dataset
-    #   REML = TRUE
-    # )
-    # beep()
-    
-    #gam()
-    gamm_model <- gam(
-      Alive_Dead ~ 
-        s(ln_bodymass, k=3) + 
-        s(at_celsius, k=3) +
-        s(MinsExposedtoAir, k=3) + 
-        s(Trawl_duration, k=3) +
-        s(depth, k=3) + 
-        #factor(habitat) +  
-        #s(ln_Aeco, k=3) +
-        s(Species, bs = "re") +  # Random effect for species
-        s(Vessel, bs = "re", by = Metier),
-      family = binomial(link = "logit"),  
-      data = train_data,
-      method = "REML")
-    
-    
-    #gamm4():
-    #summary(gamm_model$gam)  
-    #AIC(gamm_model$mer) 
-    #par(mfrow = c(2, 3))  
-    #plot(gamm_model$gam, residuals = TRUE, shade = TRUE, seWithMean = TRUE)
-    #par(mfrow = c(1,1))  # Reset plot layout
-    
-    #gam():
-    #summary(gamm_model)
-    #AIC(gamm_model)             # 1819.563 #1819.827
-    #plot(gamm_model, pages = 1) 
-    
-    
-    # Make predictions on the test data
-    #gam()
-    test_data$predicted_prob <- predict(gamm_model, newdata = test_data, type = "response")
-    #gamm4()
-    #test_data$predicted_prob <- predict(gamm_model$gam, type = "response", test_data)
-    
-    # Prepare data for AUC calculation
-    observed <- test_data %>% dplyr::select(Alive_Dead)
-    predicted <- test_data %>%
-      dplyr::mutate(predicted_prob = as.numeric(predicted_prob)) %>%  # Convert to numeric
-      dplyr::select(predicted_prob)
-    # Rename prediction column explicitly (required by presence.absence.accuracy)
-    colnames(predicted) <- "Model_1"
-    
-    #make dataframe:
-    auc_data <- bind_cols(observed, predicted)
-    # Ensure 'Alive_Dead' is first and prediction column is second
-    auc_data <- auc_data %>%
-      dplyr::select(Alive_Dead, Model_1)  # Reorder columns
-    
-    # Convert to a standard dataframe (ensures compatibility with base R functions)
-    auc_data <- as.data.frame(auc_data)
-    
-    # Add an ID column (if `presence.absence.accuracy()` expects an identifier)
-    auc_data$ID <- seq_len(nrow(auc_data))
-    
-    # Ensure 'Alive_Dead' is first, 'Model_1' is second, and an identifier is included
-    auc_data <- auc_data %>%
-      dplyr::select(ID, Alive_Dead, Model_1)
-    summary(auc_data)
-    
-    # Compute AUC, ensuring correct column selection
-    auc_result <- presence.absence.accuracy(auc_data)
-    
-    # Convert AUC results to a data frame
-    auc_result <- as.data.frame(auc_result) %>%
-      dplyr::select(AUC, AUC.sd) %>%
-      dplyr::mutate(test_iteration = f)
-    print(auc_result)
-    
-    # Store AUC result for this fold
-    auc_results[[f]] <- auc_result
-  }
-  
-  # Combine AUC results across folds
-  auc_binded <- do.call(bind_rows, auc_results)
-  
-  # Compute mean and SD of AUC per species
-  auc_summary <- auc_binded %>%
-    dplyr::summarize(
-      mean_AUC = round(mean(AUC), 5),
-      sd_AUC = round(sd(AUC), 5)
-    )
-
-# Print AUC summary
-print(auc_summary)
-beep()
+#auc_results <- list()
+#test_predictions <- list()  # Store actual test data for ROC
+#
+#  # Perform 5-fold cross-validation
+#  for (f in 1:5) {
+#    #f=2
+#    # Split data into training and testing sets
+#    train_data <- data %>% filter(fold != f)
+#    test_data <- data %>% filter(fold == f)
+#    
+#    # Fit GAMM model on training data
+#    # gamm4:
+#    # gamm_model <- gamm4::gamm4(
+#    #   Alive_Dead ~ 
+#    #     s(sMinsExposedtoAir) + 
+#    #     s(sdepth) +  
+#    #     s(sln_bodymass) + 
+#    #     s(sat_celsius) +  
+#    #     habitat +
+#    #    s(sTrawl_duration), # +  
+#    #   #s(sln_Aeco),
+#    #   random = ~ (1 | Species),  # Corrected random effect formula
+#    #   family = binomial(link = "logit"),  # Corrected family specification
+#    #   data = train_data,  # Explicitly define dataset
+#    #   REML = TRUE
+#    # )
+#    # beep()
+#    
+#    #gam()
+#    gamm_model <- gam(
+#      Alive_Dead ~ 
+#        s(ln_bodymass, k=3) + 
+#        s(at_celsius, k=3) +
+#        s(MinsExposedtoAir, k=3) + 
+#        s(Trawl_duration, k=3) +
+#        s(depth, k=3) + 
+#        #factor(habitat) +  
+#        #s(ln_Aeco, k=3) +
+#        s(Species, bs = "re") +  # Random effect for species
+#        s(Vessel, bs = "re", by = Metier),
+#      family = binomial(link = "logit"),  
+#      data = train_data,
+#      method = "REML")
+#    
+#    
+#    #gamm4():
+#    #summary(gamm_model$gam)  
+#    #AIC(gamm_model$mer) 
+#    #par(mfrow = c(2, 3))  
+#    #plot(gamm_model$gam, residuals = TRUE, shade = TRUE, seWithMean = TRUE)
+#    #par(mfrow = c(1,1))  # Reset plot layout
+#    
+#    #gam():
+#    #summary(gamm_model)
+#    #AIC(gamm_model)             # 1819.563 #1819.827
+#    #plot(gamm_model, pages = 1) 
+#    
+#    
+#    # Make predictions on the test data
+#    #gam()
+#    test_data$predicted_prob <- predict(gamm_model, newdata = test_data, type = "response")
+#    #gamm4()
+#    #test_data$predicted_prob <- predict(gamm_model$gam, type = "response", test_data)
+#    
+#    # Prepare data for AUC calculation
+#    observed <- test_data %>% dplyr::select(Alive_Dead)
+#    predicted <- test_data %>%
+#      dplyr::mutate(predicted_prob = as.numeric(predicted_prob)) %>%  # Convert to numeric
+#      dplyr::select(predicted_prob)
+#    # Rename prediction column explicitly (required by presence.absence.accuracy)
+#    colnames(predicted) <- "Model_1"
+#    
+#    #make dataframe:
+#    auc_data <- bind_cols(observed, predicted)
+#    # Ensure 'Alive_Dead' is first and prediction column is second
+#    auc_data <- auc_data %>%
+#      dplyr::select(Alive_Dead, Model_1)  # Reorder columns
+#    
+#    # Convert to a standard dataframe (ensures compatibility with base R functions)
+#    auc_data <- as.data.frame(auc_data)
+#    
+#    # Add an ID column (if `presence.absence.accuracy()` expects an identifier)
+#    auc_data$ID <- seq_len(nrow(auc_data))
+#    
+#    # Ensure 'Alive_Dead' is first, 'Model_1' is second, and an identifier is included
+#    auc_data <- auc_data %>%
+#      dplyr::select(ID, Alive_Dead, Model_1)
+#    summary(auc_data)
+#    
+#    # Compute AUC, ensuring correct column selection
+#    auc_result <- presence.absence.accuracy(auc_data)
+#    
+#    # Convert AUC results to a data frame
+#    auc_result <- as.data.frame(auc_result) %>%
+#      dplyr::select(AUC, AUC.sd) %>%
+#      dplyr::mutate(test_iteration = f)
+#    print(auc_result)
+#    
+#    # Store AUC result for this fold
+#    auc_results[[f]] <- auc_result
+#  }
+#  
+#  # Combine AUC results across folds
+#  auc_binded <- do.call(bind_rows, auc_results)
+#  
+#  # Compute mean and SD of AUC per species
+#  auc_summary <- auc_binded %>%
+#    dplyr::summarize(
+#      mean_AUC = round(mean(AUC), 5),
+#      sd_AUC = round(sd(AUC), 5)
+#    )
+#
+## Print AUC summary
+#print(auc_summary)
+#beep()
 
