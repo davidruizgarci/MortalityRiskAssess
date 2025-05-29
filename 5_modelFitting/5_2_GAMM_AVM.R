@@ -444,29 +444,14 @@ plot(gamm_model$gam, pages = 1)
 
 
 # Fit the full model using gam():
-gamm_model <- gam(    #1782.687
-  Alive_Dead ~ 
-    s(ln_bodymass, k=3) + 
-    s(at_celsius, k=3) +
-    s(MinsExposedtoAir, k=3) + 
-    s(Trawl_duration, k=3) +
-    s(depth, k=3) + 
-    #factor(habitat) +  
-    #s(ln_Aeco, k=3) +
-    s(Species, bs = "re") +  # Random effect for species
-    s(Vessel, bs = "re", by = Metier),
-  family = binomial(link = "logit"),  
-  data = data,
-  method = "REML")
-
 gamm_model <- gam(   
   Alive_Dead ~ 
-    s(ln_bodymass, k=3) + 
-    s(at_celsius, k=3) +
-    s(MinsExposedtoAir, k=3) + 
-    s(Trawl_duration, k=3) +
+    #s(ln_bodymass, k=3) + 
+    #s(at_celsius, k=3) +
+    #s(MinsExposedtoAir, k=3) + 
+    #s(Trawl_duration, k=3) +
     #s(depth, k=3) + 
-    #te(MinsExposedtoAir, Trawl_duration, k = c(3, 3)) +  # interaction term
+    te(MinsExposedtoAir, Trawl_duration, k = c(3, 3)) +  # interaction term
     te(ln_bodymass, at_celsius, k = c(3, 3)) +  # interaction term
     s(Species, bs = "re") +  # Random effect for species
     #s(Vessel, bs = "re"),
@@ -476,7 +461,7 @@ gamm_model <- gam(
   method = "REML")
 
 summary(gamm_model)         
-AIC(gamm_model)       #1783.253 #1764.692
+AIC(gamm_model)       #1764.692
 draw(gamm_model, scales = 'free')
 #plot(gamm_model, pages = 1) 
 #gam.check(gamm_model)
@@ -488,7 +473,7 @@ summary(gamm_model)$dev.expl #55.32%
 # Save the model:
 path <- paste0(output_data, "/model/AVM")
 if (!dir.exists(path)) dir.create(path, recursive = TRUE)
-file_name <- paste0(path, "/AVM_GAMM_INTER1.rds")
+file_name <- paste0(path, "/AVM_GAMM_INTER2.rds")
 #file_name <- paste0(path, "/AVM_GAMM_interaction.rds")
 saveRDS(gamm_model, file = file_name)
 
@@ -506,12 +491,12 @@ saveRDS(gamm_model, file = file_name)
 # Check the variance explained by the random factors:
 gamm_fixed <- gam(   # 18.3 %
   Alive_Dead ~ 
-    s(ln_bodymass, k=3) + 
-    s(at_celsius, k=3) +
-    s(MinsExposedtoAir, k=3) + 
-    s(Trawl_duration, k=3) +
+    #s(ln_bodymass, k=3) + 
+    #s(at_celsius, k=3) +
+    #s(MinsExposedtoAir, k=3) + 
+    #s(Trawl_duration, k=3) +
     #s(depth, k=3) + 
-    #te(MinsExposedtoAir, Trawl_duration, k = c(3, 3)) +  # interaction term
+    te(MinsExposedtoAir, Trawl_duration, k = c(3, 3)) +  # interaction term
     te(ln_bodymass, at_celsius, k = c(3, 3)),
   family = binomial(link = "logit"),  
   data = data,
@@ -531,7 +516,7 @@ summary(gamm_model)
 outdir <- paste0('C:/Users/david/OneDrive/Escritorio/PRM_paper/Figures/GAMM4/AVM')
 if (!dir.exists(outdir)) dir.create(outdir, recursive = TRUE)
 setwd(outdir)
-jpeg(file = "AVM_GAMM_final_interaction.jpeg", 
+jpeg(file = "AVM_GAMM_final_INTER2.jpeg", 
      width = 20, height = 20, units = "cm", res = 600)
 
 #par(mfrow = c(2, 3), pty = "s")  # Ensures a 2x2 grid & square aspect ratio
@@ -546,7 +531,17 @@ jpeg(file = "AVM_GAMM_final_interaction.jpeg",
 b <- getViz(gamm_model)
 # print() only needed because we want to plot on a single page
 print(plot(b), pages = 1)
+dev.off()
 
+#Export
+outdir <- paste0('C:/Users/david/OneDrive/Escritorio/PRM_paper/Figures/GAMM4/AVM')
+if (!dir.exists(outdir)) dir.create(outdir, recursive = TRUE)
+setwd(outdir)
+p <- plot(b, allTerms = TRUE)[[1]]
+# Mostrar los plots uno por uno
+jpeg(file = "AVM_GAMM_final_INTER1.jpeg", 
+     width = 20, height = 20, units = "cm", res = 600)
+print(p[[5]] + theme(aspect.ratio = 1))
 dev.off()
 
 # Check interactions:
@@ -713,8 +708,8 @@ p_sp <- ggplot(ranef_df, aes(x = Species, y = Intercept, fill = Depth, size =  b
   theme(
     panel.grid = element_blank(),
     axis.line = element_line(color = "black"),
-    axis.ticks = element_line(color = "black"),
-    aspect.ratio = 1 
+    axis.ticks = element_line(color = "black")#,
+    #aspect.ratio = 1 
   ) +
   scale_fill_gradientn(colors = color_palette_bathy) +
   scale_size_continuous(range = c(2, 11)) +  # Increase the minimum and maximum point sizes
@@ -726,8 +721,8 @@ print(p_sp)
 #  Save the plot
 path <- paste0(output_data, "/Figures/GAMM/AVM")
 if (!dir.exists(path)) dir.create(path, recursive = TRUE)
-p_png <- paste0(path, "/AVM_spIntercept_final.png")
-ggsave(p_png, p_sp, width = 20, height = 20, units = "cm", dpi = 600)
+p_png <- paste0(path, "/AVM_spIntercept_final_INTER1.png")
+ggsave(p_png, p_sp, width = 21.5, height = 11.5, units = "cm", dpi = 600)
 
 
 # 5.1.  Coefficient random effect for each Metier --------------------------------
@@ -769,36 +764,61 @@ ggplot(vessel_metier1_smooth, aes(x = Vessel, y = .estimate)) +
   )
 
 
+# Plot metier averages:
+# Filter and summarise for each vessel:metier smooth
+smooth_summary <- smooths_all %>%
+  filter(.smooth %in% c("s(Vessel):Metier1", "s(Vessel):Metier2", "s(Vessel):Metier3")) %>%
+  group_by(.smooth) %>%
+  summarise(
+    mean = mean(.estimate, na.rm = TRUE),
+    sd = sd(.estimate, na.rm = TRUE)
+  ) %>%
+  ungroup()
 
+smooth_summary <- smooth_summary %>%
+  mutate(metier = dplyr::recode(.smooth,
+                                !!!setNames(
+                                  c("Hake metier", "Norway lobset metier", "Blue and red shrimp metier"),
+                                  c("s(Vessel):Metier1", "s(Vessel):Metier2", "s(Vessel):Metier3")
+                                )))
+smooth_summary$metier <- factor(
+  smooth_summary$metier,
+  levels = c("Blue and red shrimp metier", "Norway lobset metier", "Hake metier")
+)
+head(smooth_summary)
 
-vessel_smooth <- smooths_all %>%
-  filter(.smooth == "s(Vessel)")
-# Plot the random effects for vessels (Metier1 only)
-ggplot(vessel_smooth, aes(x = Vessel, y = .estimate)) +
-  # Add a horizontal line at 0 for reference (neutral effect)
-  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
-  # Plot the vessel random effect as points (log-odds scale)
-  geom_point(shape = 21, size = 4, fill = "darkorange", color = "black") +
-  # Add error bars showing ±1 SE around the estimate
-  geom_errorbar(aes(ymin = .estimate - .se, ymax = .estimate + .se), width = 0.2) +
-  # Add vessel names as labels next to the points
-  geom_text(aes(label = Vessel), hjust = -0.2, size = 3.5) +
-  # Flip the axes to make it horizontal (vessels on y-axis)
-  coord_flip() +
-  # Add title and axis labels
-  labs(
-    title = "Random Effects for Vessels in Metier1",
-    y = "Effect (log-odds scale)",
-    x = "Vessel"
+metier_colors <- c(
+  "Hake metier" = "#35A5C2",  # elegant blue
+  "Norway lobset metier" = "#F9B44E",  # warm yellow
+  "Blue and red shrimp metier" = "#A3362A"   # rich red
+)
+
+p_vessel_metier <- ggplot(smooth_summary, aes(y = metier, x = mean, color = metier)) +
+  geom_pointrange(
+    aes(xmin = mean - sd, xmax = mean + sd),
+    linewidth = 0.6, size = 1.8
   ) +
+  scale_color_manual(values = metier_colors) +
+  xlab("Mean smooth estimate") +
+  ylab("") +
   theme_minimal() +
-  # Optional: Improve axis text readability
   theme(
-    axis.text.y = element_text(size = 10),
-    plot.title = element_text(size = 14, face = "bold")
+    axis.text.y = element_text(size = 11),
+    axis.text.x = element_text(size = 10),
+    axis.title.x = element_text(size = 12),
+    panel.grid = element_blank(),
+    plot.background = element_blank(),
+    legend.position = "none"
   )
 
 
+p_vessel_metier
+
+#  Save the plot
+path <- paste0(output_data, "/Figures/GAMM/AVM")
+if (!dir.exists(path)) dir.create(path, recursive = TRUE)
+p_png <- paste0(path, "/AVM_Metier_Intercept_final_INTER1.png")
+ggsave(p_png, p_vessel_metier, width = 16.5, height = 11.5, units = "cm", dpi = 600)
 
 
 
