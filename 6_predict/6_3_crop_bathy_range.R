@@ -40,8 +40,8 @@ sp_list
 
 # 1.3. Create dates
 date_start <- as.Date("2021-01-01") 
-date_end <- as.Date("2021-01-04")
-dates <- seq.Date(date_start, date_end, by="2 days")  
+date_end <- as.Date("2021-12-31")
+dates <- seq.Date(date_start, date_end, by="30 days")  
 
 
 # 1.4. Load bathymetry raster once

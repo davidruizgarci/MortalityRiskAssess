@@ -16,11 +16,7 @@ library(smplot2)
 # Define seasons and input path
 season_vals <- c("Spring", "Winter", "Fall", "Summer")
 
-<<<<<<< HEAD
-mins <- "Mins29" #Mins55 #Mins41 #Mins10
-=======
-mins <- "Mins29" #Mins55 #Mins41 #Mins10 #Mins29
->>>>>>> 743a7f333544a8a6373e71a5039e49abb4e4ee27
+mins <- "Mins10" #Mins55 #Mins41 #Mins10 #Mins29
 trawl <- "Trawl2.9" #Trawl4.1 #Trawl3.4 #Trawl2.9
 indir <- file.path(output_data, "predict_across_sp", "2021", paste0(mins, "_", trawl))
 
@@ -29,7 +25,7 @@ data_list <- list()
 
 for (season in season_vals) {
   #season <- season_vals[1]
-  file_mean <- file.path(indir, paste0(season, "_across_sp_pred_mean.tif"))
+  file_mean <- file.path(indir, paste0(season, "_across_sp_pred_mean_INTER2.tif"))
   
   if (file.exists(file_mean)) {
     r <- raster(file_mean)
@@ -56,9 +52,10 @@ kruskal_test <- kruskal.test(risk ~ season, data = seasonal_data)
 print(kruskal_test)
 
 # Results:
-#Mins55_Trawl4.1: Kruskal-Wallis chi-squared = 464.58, df = 3, p-value < 2.2e-16
-#Mins41_Trawl3.4: Kruskal-Wallis chi-squared = 455.72, df = 3, p-value < 2.2e-16
-#Mins10_Trawl2.9: Kruskal-Wallis chi-squared = 445.72, df = 3, p-value < 2.2e-16
+#Mins55_Trawl4.1: Kruskal-Wallis chi-squared = 2298.5, df = 3, p-value < 2.2e-16
+#Mins41_Trawl3.4: Kruskal-Wallis chi-squared = 3360.4, df = 3, p-value < 2.2e-16
+#Mins29_Trawl2.9: Kruskal-Wallis chi-squared = 4145.4, df = 3, p-value < 2.2e-16
+#Mins10_Trawl2.9: Kruskal-Wallis chi-squared = 4738.1, df = 3, p-value < 2.2e-16
 
 
 # Pairwise Wilcoxon with Bonferroni correction
@@ -68,22 +65,28 @@ print(pairwise_test)
 
 #Pairwise comparisons using Wilcoxon rank sum test with continuity correction
 #Mins55_Trawl4.1:
-#Fall   Spring Summer
-#Spring 1.0000 -      -     
+#       Fall   Spring Summer
+#Spring 1      -      -     
 #Summer <2e-16 <2e-16 -     
-#Winter 0.0227 0.0092 <2e-16
+#Winter <2e-16 <2e-16 <2e-16
 
 #Mins41_Trawl3.4:
-#Fall   Spring Summer
-#Spring 1.0000 -      -     
+#         Fall   Spring Summer
+#Spring 0.017  -      -     
 #Summer <2e-16 <2e-16 -     
-#Winter 0.0092 0.0056 <2e-16
+#Winter <2e-16 <2e-16 <2e-16
+
+#Mins29_Trawl2.9:
+#         Fall   Spring Summer
+#Spring 0.017  -      -     
+#Summer <2e-16 <2e-16 -     
+#Winter <2e-16 <2e-16 <2e-16
 
 #Mins10_Trawl2.9:
-#Fall   Spring Summer
-#Spring 1.0000 -      -     
+#         Fall   Spring Summer
+#Spring 0.009  -      -     
 #Summer <2e-16 <2e-16 -     
-#Winter 0.0015 0.0022 <2e-16
+#Winter <2e-16 <2e-16 <2e-16
 
 
 # Violin and boxplot
@@ -114,7 +117,7 @@ print(p)
 # Export
 outdir <- file.path(output_data, "fig", "raincloud_seasons", paste0(mins, "_", trawl))
 if (!dir.exists(outdir)) dir.create(outdir, recursive = TRUE)
-file <- paste0(mins, "_", trawl, "_AVM_across_sp_violin.png")
+file <- paste0(mins, "_", trawl, "_AVM_across_sp_violin_INTER2.png")
 ggsave(file.path(outdir, file), p, width = 17, height = 10, units = "cm", dpi = 300)
 
 
@@ -133,8 +136,30 @@ seasonal_data %>%
   ) %>%
   arrange(season)
 
-#season count      min       Q1  median      Q3     max    mean      sd
-#1 Fall     211 0.000280 0.00110  0.00343 0.00400 0.00727 0.00291 0.00174
-#2 Spring   211 0.000261 0.00132  0.00334 0.00419 0.0110  0.00313 0.00203
-#3 Summer   211 0.00132  0.0200   0.0469  0.0640  0.188   0.0482  0.0345 
-#4 Winter   211 0.000244 0.000996 0.00295 0.00349 0.00596 0.00251 0.00152
+#Mins55_Trawl4.1:
+#season count   min    Q1 median    Q3   max  mean    sd
+#1 Fall    2857 0.185 0.210  0.307 0.510 0.880 0.383 0.194
+#2 Spring  2857 0.176 0.219  0.323 0.508 0.920 0.387 0.191
+#3 Summer  2857 0.318 0.459  0.568 0.667 0.996 0.586 0.167
+#4 Winter  2857 0.157 0.178  0.280 0.480 0.857 0.354 0.194
+
+#Mins41_Trawl3.4:
+#season count    min     Q1 median    Q3   max  mean    sd
+#1 Fall    2857 0.0653 0.0772  0.166 0.352 0.695 0.226 0.166
+#2 Spring  2857 0.0626 0.0842  0.180 0.350 0.797 0.232 0.166
+#3 Summer  2857 0.154  0.336   0.461 0.593 0.987 0.491 0.201
+#4 Winter  2857 0.0542 0.0649  0.149 0.323 0.657 0.207 0.157
+
+#Mins29_Trawl2.9:
+#season count    min     Q1 median    Q3   max  mean     sd
+#1 Fall    2857 0.0218 0.0262 0.0796 0.195 0.448 0.117 0.101 
+#2 Spring  2857 0.0207 0.0286 0.0876 0.194 0.576 0.120 0.103 
+#3 Summer  2857 0.0623 0.213  0.330  0.521 0.960 0.388 0.220 
+#4 Winter  2857 0.0178 0.0217 0.0688 0.178 0.401 0.103 0.0908
+
+#Mins10_Trawl2.9:
+#season count     min      Q1 median     Q3    max   mean     sd
+#1 Fall    2857 0.00322 0.00390 0.0158 0.0435 0.119  0.0245 0.0232
+#2 Spring  2857 0.00305 0.00425 0.0175 0.0433 0.189  0.0260 0.0258
+#3 Summer  2857 0.0103  0.0573  0.137  0.346  0.808  0.211  0.184 
+#4 Winter  2857 0.00261 0.00320 0.0131 0.0382 0.0971 0.0209 0.0199

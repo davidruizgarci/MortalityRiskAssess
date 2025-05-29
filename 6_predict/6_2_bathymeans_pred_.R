@@ -32,8 +32,8 @@ mask <- st_intersection(mask, bbox)
 
 # Create dates
 date_start <- as.Date("2021-01-01") 
-date_end <- as.Date("2021-01-04")
-dates <- seq.Date(date_start, date_end, by="2 days")  
+date_end <- as.Date("2021-12-31")
+dates <- seq.Date(date_start, date_end, by="30 days")  
 # Convert date sequences to dataframes
 year_df <- data.frame(date = dates)
 

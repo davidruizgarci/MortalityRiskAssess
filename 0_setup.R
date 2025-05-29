@@ -31,3 +31,9 @@ if(cpu == "laptop") f <- "C:/Users/david/OneDrive/Escritorio/chondrichthyan_habi
 usernameERA <- paste(readLines(f, warn = FALSE), collapse = "")
 if(cpu == "laptop") f <- "C:/Users/david/OneDrive/Escritorio/chondrichthyan_habitat/pswERA5.txt"
 passwordERA <- paste(readLines(f, warn = FALSE), collapse = "")
+
+# 3. load CERRA username / password based on cpu
+if(cpu == "laptop") f <- "C:/Users/david/OneDrive/Escritorio/chondrichthyan_habitat/userCERRA.txt"
+usernameERA <- paste(readLines(f, warn = FALSE), collapse = "")
+if(cpu == "laptop") f <- "C:/Users/david/OneDrive/Escritorio/chondrichthyan_habitat/pswCERRA.txt"
+passwordERA <- paste(readLines(f, warn = FALSE), collapse = "")

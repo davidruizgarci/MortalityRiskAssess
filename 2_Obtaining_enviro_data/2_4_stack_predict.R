@@ -21,7 +21,8 @@ if (!dir.exists(outdir)) dir.create(outdir, recursive = TRUE)
 
 # 2. Create oceanmask-----------------------------------------------------------
 # Set raster resolution and extent
-res <- 0.25
+#res <- 0.25
+res <- 0.05
 e <- extent(-2.125, 4.125, 35.875, 43.125)
 
 # create base raster
@@ -35,6 +36,15 @@ bathy <- raster(paste0(static_data, "/bathy.tif"))  # bathymetry
 bathy <- bathy+0
 print(bathy)
 plot(bathy)
+
+# Resamplear usando bilineal o nearest neighbor
+#template <- raster(extent(bathy), res = 0.25, crs = crs(bathy))
+template <- raster(extent(bathy), res = 0.05, crs = crs(bathy))
+bathy_resampled <- resample(bathy, template, method = "bilinear")
+plot(bathy_resampled)
+print(bathy_resampled)
+bathy_resampled[bathy_resampled >= 0 | bathy_resampled <= -1000] <- NA
+bathy <- bathy_resampled
 
 # Keep only values between 0 and -199
 bathy_shallow <- bathy
@@ -73,14 +83,15 @@ print(bat)
 # Stack them all:
 stack_static <- stack(bat)
 plot(stack_static)
+
 #output_file <- file.path(static_data, paste0("stack_static_shallow.grd"))
 #output_file <- file.path(static_data, paste0("stack_static_med.grd"))
-output_file <- file.path(static_data, paste0("stack_static_deep.grd"))
+output_file <- file.path(static_data, paste0("stack_static_deep_new.grd"))
 writeRaster(stack_static, output_file, format = "raster", overwrite = TRUE)
 
 #file <- file.path(static_data, paste0("stack_static_shallow.grd"))
 #file <- file.path(static_data, paste0("stack_static_med.grd"))
-file <- file.path(static_data, paste0("stack_static_deep.grd"))
+file <- file.path(static_data, paste0("stack_static_deep_new.grd"))
 stack_static <- raster::stack(file)
 plot(stack_static)
 
@@ -228,7 +239,8 @@ head(catalogERA)
 variables <- c("t2m")
 
 # Set the resolution and extent:
-res <- 0.25
+#res <- 0.25
+res <- 0.05
 e <- extent(-2.125, 4.125, 35.875, 43.125)
 
 # Process the stacks

@@ -42,7 +42,7 @@ mask <- st_intersection(mask, bbox)
 print(mask)
 
 # 4. Create season dataframe
-date_seq <- seq.Date(as.Date("2021-01-01"), as.Date("2021-01-04"), by="2 days")
+date_seq <- seq.Date(as.Date("2021-01-01"), as.Date("2021-12-31"), by="30 days")
 get_season <- function(date) {
   m <- month(date)
   d <- day(date)

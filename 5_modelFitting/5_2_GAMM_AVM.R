@@ -461,14 +461,14 @@ gamm_model <- gam(
   method = "REML")
 
 summary(gamm_model)         
-AIC(gamm_model)       #1764.692
+AIC(gamm_model)       #1757.605
 draw(gamm_model, scales = 'free')
 #plot(gamm_model, pages = 1) 
 #gam.check(gamm_model)
 appraise(gamm_model, method = 'simulate')      
 
 # Variance explained
-summary(gamm_model)$dev.expl #55.32%
+summary(gamm_model)$dev.expl #56.07%
 
 # Save the model:
 path <- paste0(output_data, "/model/AVM")
@@ -489,7 +489,7 @@ saveRDS(gamm_model, file = file_name)
 #  labs(x = "Predicted Probability", y = "Observed Alive_Dead", title = "Predicted vs. Observed")
 
 # Check the variance explained by the random factors:
-gamm_fixed <- gam(   # 18.3 %
+gamm_fixed <- gam(   
   Alive_Dead ~ 
     #s(ln_bodymass, k=3) + 
     #s(at_celsius, k=3) +
@@ -506,7 +506,7 @@ fix <- summary(gamm_fixed)$dev.expl     # model without random effects
 all <- summary(gamm_model)$dev.expl     # model with random effects
 random <- all-fix
 print(paste("Percentage of variance explained by random factors:", round(random * 100/all, 1), "%"))
-# Percentage of variance explained by random factors: 21.5% 
+# Percentage of variance explained by random factors: 39.5% 
 
 
 # 4. Plot the factor effect-----------------------------------------------------
@@ -538,10 +538,11 @@ outdir <- paste0('C:/Users/david/OneDrive/Escritorio/PRM_paper/Figures/GAMM4/AVM
 if (!dir.exists(outdir)) dir.create(outdir, recursive = TRUE)
 setwd(outdir)
 p <- plot(b, allTerms = TRUE)[[1]]
+print(p[[2]])
 # Mostrar los plots uno por uno
-jpeg(file = "AVM_GAMM_final_INTER1.jpeg", 
+jpeg(file = "AVM_GAMM_final_INTER2.jpeg", 
      width = 20, height = 20, units = "cm", res = 600)
-print(p[[5]] + theme(aspect.ratio = 1))
+print(p[[2]] + theme(aspect.ratio = 1))
 dev.off()
 
 # Check interactions:
@@ -708,8 +709,8 @@ p_sp <- ggplot(ranef_df, aes(x = Species, y = Intercept, fill = Depth, size =  b
   theme(
     panel.grid = element_blank(),
     axis.line = element_line(color = "black"),
-    axis.ticks = element_line(color = "black")#,
-    #aspect.ratio = 1 
+    axis.ticks = element_line(color = "black"),
+    aspect.ratio = 1 
   ) +
   scale_fill_gradientn(colors = color_palette_bathy) +
   scale_size_continuous(range = c(2, 11)) +  # Increase the minimum and maximum point sizes
@@ -722,7 +723,7 @@ print(p_sp)
 path <- paste0(output_data, "/Figures/GAMM/AVM")
 if (!dir.exists(path)) dir.create(path, recursive = TRUE)
 p_png <- paste0(path, "/AVM_spIntercept_final_INTER1.png")
-ggsave(p_png, p_sp, width = 21.5, height = 11.5, units = "cm", dpi = 600)
+ggsave(p_png, p_sp, width = 20, height = 20, units = "cm", dpi = 600)
 
 
 # 5.1.  Coefficient random effect for each Metier --------------------------------
@@ -808,6 +809,7 @@ p_vessel_metier <- ggplot(smooth_summary, aes(y = metier, x = mean, color = meti
     axis.title.x = element_text(size = 12),
     panel.grid = element_blank(),
     plot.background = element_blank(),
+    aspect.ratio = 1,
     legend.position = "none"
   )
 
@@ -818,7 +820,7 @@ p_vessel_metier
 path <- paste0(output_data, "/Figures/GAMM/AVM")
 if (!dir.exists(path)) dir.create(path, recursive = TRUE)
 p_png <- paste0(path, "/AVM_Metier_Intercept_final_INTER1.png")
-ggsave(p_png, p_vessel_metier, width = 16.5, height = 11.5, units = "cm", dpi = 600)
+ggsave(p_png, p_vessel_metier, width = 20, height = 20, units = "cm", dpi = 600)
 
 
 

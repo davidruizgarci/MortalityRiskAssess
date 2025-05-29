@@ -482,6 +482,7 @@ model_beta <- gam(
     s(at_celsius, k = 3) +
     s(ln_bodymass, k = 3) + 
     s(depth, k = 3) + 
+    #te(ln_bodymass, at_celsius, k = c(3, 3)) +  # interaction term
     #s(Trawl_duration, k = 3) +
     #s(ln_Aeco, k = 3) +
     #habitat + 
@@ -493,7 +494,7 @@ model_beta <- gam(
 )
 
 summary(model_beta)         
-AIC(model_beta) 
+AIC(model_beta)  #-1755.563
 draw(model_beta, scales = 'free')
 #plot(model_beta, pages = 1) 
 appraise(model_beta, method = 'simulate')      
