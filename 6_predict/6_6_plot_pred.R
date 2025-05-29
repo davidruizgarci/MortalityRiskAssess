@@ -25,13 +25,13 @@ bathy<- raster("input/gebco/Bathy.tif")
 print(bathy)
 # Convert bathy raster to data frame
 bathy_df <- as.data.frame(bathy, xy = TRUE)
+head(bathy_df)
 #Colour for bathymetry:
 # Create a mask if you dont want to plot all the bathymetricla range
 #bathy_bb <-  bathy_df$Bathy <= 5 #only upper break
 bathy_filtered <- bathy_df %>%
-  filter(Bathy >= -800 & Bathy <= 40)
-# Apply the mask
-print(bathy_filtered)
+  dplyr::filter(Bathy >= -800 & Bathy <= 40)
+head(bathy_filtered)
 
 
 
@@ -48,17 +48,17 @@ print(mask)
 # 1.3. GSAs---------------------------------------------------------------------
 GSA <- st_read("input/GSAs/GSAs_simplified.shp")
 GSA_filtered <- GSA %>%
-  filter(SECT_COD == "GSA06")
+  dplyr::filter(SECT_COD == "GSA06")
 print(GSA_filtered)
 
 
 # 1.4. Predicted habitat--------------------------------------------------------
 sp <- sp_list[1]
 indir <- file.path(output_data, "predict_across_sp", "2021", paste0(mins, "_", trawl))
-file <- paste0(indir, "/", season, "_across_sp_pred_mean_INTER1.tif")
+file <- paste0(indir, "/", season, "_across_sp_pred_mean_INTER2.tif")
 risk <- raster(file)
 print(risk)
-file_sd <- paste0(indir, "/", season, "_across_sp_pred_sd_INTER1.tif")
+file_sd <- paste0(indir, "/", season, "_across_sp_pred_sd_INTER2.tif")
 risk_sd <- raster(file)
 print(risk_sd)
 
@@ -75,8 +75,8 @@ for (season in season_vals) {
   
   # Define file paths
   indir <- file.path(output_data, "predict_across_sp", "2021", paste0(mins, "_", trawl))
-  file_mean <- file.path(indir, paste0(season, "_across_sp_pred_mean_INTER1.tif"))
-  file_sd   <- file.path(indir, paste0(season, "_across_sp_pred_sd_INTER1.tif"))
+  file_mean <- file.path(indir, paste0(season, "_across_sp_pred_mean_INTER2.tif"))
+  file_sd   <- file.path(indir, paste0(season, "_across_sp_pred_sd_INTER2.tif"))
   
   if (!file.exists(file_mean) || !file.exists(file_sd)) {
     message("⚠️ Missing files for ", season, ", skipping...")
@@ -105,12 +105,12 @@ for (season in season_vals) {
     # Convert raster to sf and crop by GSA06
     risk_df <- as.data.frame(risk_cropped, xy = TRUE)
     colnames(risk_df) <- c("x", "y", "risk")
-    risk_df <- risk_df %>% filter(!is.na(risk))
+    risk_df <- risk_df %>% dplyr::filter(!is.na(risk))
     risk_sf <- st_as_sf(risk_df, coords = c("x", "y"), crs = st_crs(mask), remove = FALSE)
     risk_sf <- st_transform(risk_sf, crs = st_crs(GSA_filtered))
     risk_clipped_sf <- st_intersection(risk_sf, GSA_filtered)
     risk_clipped_df <- risk_clipped_sf %>% as.data.frame() %>%
-      dplyr::select(x, y, risk) %>% filter(!is.na(risk))
+      dplyr::select(x, y, risk) %>% dplyr::filter(!is.na(risk))
     
     # Plot
     p <- ggplot() +
@@ -127,7 +127,7 @@ for (season in season_vals) {
     # Save
     outdir <- file.path(output_data, "fig/Map", paste0(mins, "_", trawl), season)
     if (!dir.exists(outdir)) dir.create(outdir, recursive = TRUE)
-    p_png <- file.path(outdir, paste0(season, "_risk_", metric, "_INTER1.png"))
+    p_png <- file.path(outdir, paste0(season, "_risk_", metric, "_INTER2.png"))
     ggsave(p_png, p, width = 20, height = 20, units = "cm", dpi = 1800)
     message("✅ Saved ", metric, " map: ", p_png)
   }

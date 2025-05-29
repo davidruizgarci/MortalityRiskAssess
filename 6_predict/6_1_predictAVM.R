@@ -50,7 +50,7 @@ mask <- st_intersection(mask, bbox)
 # Create dates
 date_start <- as.Date("2021-01-01") 
 date_end <- as.Date("2021-12-31")
-dates <- seq.Date(date_start, date_end, by="day")  
+dates <- seq.Date(date_start, date_end, by="30 days")  
 
 #3. Create species list:
 species_list <- unique(data$Species)
@@ -102,7 +102,7 @@ bathy_mask_resampled <- crop(bathy_mask_resampled, e)
 #path <- paste0(output_data, "/model/AVM/AVM_GAMM.rds")
 #path <- paste0(output_data, "/model/AVM/AVM_GAMM_interaction.rds")
 #path <- paste0(output_data, "/model/AVM/AVM_GAMM_nodepth.rds")
-path <- paste0(output_data, "/model/AVM/AVM_GAMM_INTER1.rds")
+path <- paste0(output_data, "/model/AVM/AVM_GAMM_INTER2.rds")
 gamm_model <- readRDS(path)
 summary(gamm_model)
 
@@ -131,7 +131,7 @@ bodymass <- c(
 
 # 3. Make spatial predict for each metier---------------------------------------
 #select depth range:
-bathy_range <- "_bathy_shallow" #"_bathy_shallow" #"_bathy_med" #"_bathy_deep"
+bathy_range <- "_bathy_deep" #"_bathy_shallow" #"_bathy_med" #"_bathy_deep"
 
 for (i in 1:length(dates)) {
   #i=279
@@ -276,8 +276,8 @@ for (i in 1:length(dates)) {
     #trawl_val <-  trawl_list[3]
     
     base_name <- paste0(format(date, "%Y%m%d"), "_", sp_fixed, select, "_", combo_label)
-    writeRaster(pred_med, file.path(product_folder, paste0(base_name, "_INTER1_pred.tif")), overwrite = TRUE)
-    writeRaster(pred_cir, file.path(product_folder, paste0(base_name, "_INTER1_pred_cir.tif")), overwrite = TRUE)
+    writeRaster(pred_med, file.path(product_folder, paste0(base_name, "_INTER2_pred.tif")), overwrite = TRUE)
+    writeRaster(pred_cir, file.path(product_folder, paste0(base_name, "_INTER2_pred_cir.tif")), overwrite = TRUE)
     
     # Export PNGs
     #png(file.path(product_folder, paste0(base_name, "_pred.png")), width = 560, height = 600, res = 100)

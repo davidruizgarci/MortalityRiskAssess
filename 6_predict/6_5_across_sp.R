@@ -11,7 +11,7 @@
 data <- read.csv("temp/final/AVM_allEnviro.csv", sep = ";") 
 
 # Constants and fixed values
-mins <- "Mins55" #Mins55 #Mins41 #Mins10
+mins <- "Mins55" #Mins55 #Mins41 #Mins29 #Mins10
 trawl <- "Trawl4.1" #Trawl4.1 #Trawl3.4 #Trawl2.9
 sp_list <- unique(data$Species)
 sp_list
@@ -42,7 +42,7 @@ for (season_val in season_vals) {
     message("🔁 Processing species: ", sp)
     
     indir <- file.path(output_data, "predict_overall", "2021", sp, paste0(mins, "_", trawl))
-    pat <- paste0(season_val, "_pred_median_INTER1.tif")
+    pat <- paste0(season_val, "_pred_median_INTER2.tif")
     
     tiffile <- list.files(indir, recursive = TRUE, full.names = TRUE, pattern = pat)
     
@@ -80,21 +80,21 @@ for (season_val in season_vals) {
   if (!dir.exists(outdir)) dir.create(outdir, recursive = TRUE)
   
   # Save TIFFs
-  writeRaster(pred_mean, filename = file.path(outdir, paste0(season_val, "_across_sp_pred_mean_INTER1.tif")),
+  writeRaster(pred_mean, filename = file.path(outdir, paste0(season_val, "_across_sp_pred_mean_INTER2.tif")),
               format = "GTiff", overwrite = TRUE)
-  writeRaster(pred_sd, filename = file.path(outdir, paste0(season_val, "_across_sp_pred_sd_INTER1.tif")),
+  writeRaster(pred_sd, filename = file.path(outdir, paste0(season_val, "_across_sp_pred_sd_INTER2.tif")),
               format = "GTiff", overwrite = TRUE)
   
   message("💾 Saved rasters for season ", season_val)
   
   # Optional PNGs
-  png(file.path(outdir, paste0(season_val, "_across_sp_pred_mean_INTER1.png")), width = 560, height = 600, res = 100)
+  png(file.path(outdir, paste0(season_val, "_across_sp_pred_mean_INTER2.png")), width = 560, height = 600, res = 100)
   plot(pred_mean, main = paste("Mean Prediction\n", season_val), col = viridis::viridis(100))
   plot(mask, col = "grey80", border = "grey60", add = TRUE)
   box()
   dev.off()
   
-  png(file.path(outdir, paste0(season_val, "_across_sp_pred_sd_INTER1.png")), width = 560, height = 600, res = 100)
+  png(file.path(outdir, paste0(season_val, "_across_sp_pred_sd_INTER2.png")), width = 560, height = 600, res = 100)
   plot(pred_sd, main = paste("Prediction SD\n", season_val), col = viridis::viridis(100))
   plot(mask, col = "grey80", border = "grey60", add = TRUE)
   box()

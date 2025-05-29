@@ -10,7 +10,7 @@ library(raster)
 library(dplyr)
 library(sf)
 library(lubridate)
-
+library(beepr)
 #1. Set data repository---------------------------------------------------------
 data <- read.csv("temp/final/AVM_allEnviro.csv", sep = ";") 
 
@@ -32,8 +32,8 @@ mask <- st_intersection(mask, bbox)
 
 # Create dates
 date_start <- as.Date("2021-01-01") 
-date_end <- as.Date("2021-01-02")
-dates <- seq.Date(date_start, date_end, by="day")  
+date_end <- as.Date("2021-01-04")
+dates <- seq.Date(date_start, date_end, by="2 days")  
 # Convert date sequences to dataframes
 year_df <- data.frame(date = dates)
 
@@ -46,10 +46,13 @@ season <- "2021"
 # 2. Merge maps depth ranges (means) for each species---------------------------
 #2.1. Bathy shallow-------------------------------------------------------------
 sp_list <- unique(data$Species)
-sp_list
+sp_list 
+
+#sp_list <- c("Rpolystigma", "Gmelastomus", "Scanicula")
+
 
 season <- "2021"  # Or set dynamically
-mins <- "Mins55" #Mins55 - #Mins41 - #Mins10 #Mins29
+mins <- "Mins55" #Mins55 - #Mins41 - #Mins10 - #Mins29
 trawl <- "Trawl4.1" #Trawl4.1 - #Trawl3.4 - #Trawl2.9
 bathy_types <- c("bathy_shallow", "bathy_med", "bathy_deep")
 
@@ -74,7 +77,7 @@ for (sp in sp_list) {
       MM <- sprintf("%02d", month(date))
       DD <- sprintf("%02d", day(date))
       
-      pat <- paste0(format(date, "%Y%m%d"), "_", sp, "_", bathy, "_", mins, "_", trawl, "_INTER1_pred.tif")
+      pat <- paste0(format(date, "%Y%m%d"), "_", sp, "_", bathy, "_", mins, "_", trawl, "_INTER2_pred.tif")
       #pat <- paste0(format(date, "%Y%m%d"), "_", sp, "_", bathy, "_", mins, "_", trawl, "_pred.tif")
       #pat <- paste0(format(date, "%Y%m%d"), "_", sp, "_", bathy, "_", mins, "_", trawl, "_pred_cir.tif")
       
@@ -143,7 +146,7 @@ for (sp in sp_list) {
         clean_name <- gsub("_bathy_shallow", "", layer_name)
         clean_name <- sub("^mean", "crop", clean_name)
         
-        output_filename <- file.path(product_folder, paste0("mean_bathys_", clean_name, "_INTER1_.tif"))
+        output_filename <- file.path(product_folder, paste0("mean_bathys_", clean_name, "_INTER2_.tif"))
         #output_filename <- file.path(product_folder, paste0("mean_bathys_", clean_name, ".tif"))
         
         tryCatch({
@@ -159,3 +162,4 @@ for (sp in sp_list) {
         ", med:", n_med, ", deep:", n_deep, ")\n")
   }
 }
+beep()

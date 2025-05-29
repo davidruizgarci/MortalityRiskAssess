@@ -20,7 +20,7 @@ data <- read.csv("temp/final/AVM_allEnviro.csv", sep = ";")
 
 # Constants and fixed values
 season <- "2021"
-mins <- "Mins55" #Mins55 #Mins41 #Mins10
+mins <- "Mins55" #Mins55 #Mins41 #Mins29 #Mins10
 trawl <- "Trawl4.1" #Trawl4.1 #Trawl3.4 #Trawl2.9
 sp_list <- unique(data$Species)
 sp_list
@@ -42,7 +42,7 @@ mask <- st_intersection(mask, bbox)
 print(mask)
 
 # 4. Create season dataframe
-date_seq <- seq.Date(as.Date("2021-01-01"), as.Date("2021-01-02"), by="day")
+date_seq <- seq.Date(as.Date("2021-01-01"), as.Date("2021-01-04"), by="2 days")
 get_season <- function(date) {
   m <- month(date)
   d <- day(date)
@@ -89,7 +89,7 @@ for (sp in sp_list) {
       #i=1
       date <- dates_df$date[i]
       MM <- sprintf("%02d", month(date))
-      pat <- paste0("crop_bathys_X", format(date, "%Y%m%d"), "_", sp, "_", mins, "_", trawl, "_pred_INTER1.tif")
+      pat <- paste0("crop_bathys_X", format(date, "%Y%m%d"), "_", sp, "_", mins, "_", trawl, "_pred_INTER2.tif")
       stack_repo <- file.path(indir, MM)
       
       message("      [", i, "/", nrow(dates_df), "] Date: ", date, " | Looking in: ", stack_repo)
@@ -127,12 +127,12 @@ for (sp in sp_list) {
     message("    >>> Median raster calculated.")
     
     # Save TIFF
-    tifffile <- file.path(outdir, paste0(season_val, "_pred_median_INTER1.tif"))
+    tifffile <- file.path(outdir, paste0(season_val, "_pred_median_INTER2.tif"))
     writeRaster(pred_med, filename = tifffile, format = "GTiff", overwrite = TRUE)
     message("    >>> TIFF saved: ", tifffile)
     
     # Optional PNG save (uncomment to use)
-    pngfile <- file.path(outdir, paste0(season_val, "_pred_median_INTER1.png"))
+    pngfile <- file.path(outdir, paste0(season_val, "_pred_median_INTER2.png"))
     png(pngfile, width = 560, height = 600, res = 100)
     plot(pred_med, main = paste(sp, "Model:", "\n", season_val), col = viridis(100))
     plot(mask, col = "grey80", border = "grey60", add = TRUE)

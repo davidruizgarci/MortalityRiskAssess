@@ -27,6 +27,8 @@ trawl <- "Trawl4.1" #Trawl4.1 - #Trawl3.4 - #Trawl2.9
 sp_list <- unique(data$Species)
 sp_list
 
+#sp_list <- c("Rpolystigma", "Gmelastomus", "Scanicula")
+
 # select only few species if needed:
 #sp_list <- sp_list[!sp_list %in% c(
 #  "Rpolystigma", "Gmelastomus", "Scanicula",
@@ -38,13 +40,8 @@ sp_list
 
 # 1.3. Create dates
 date_start <- as.Date("2021-01-01") 
-date_end <- as.Date("2021-01-02")
-
-#subset dates if needed:
-# date_start <- as.Date("2021-12-12") 
-# date_end <- as.Date("2021-12-31")
-
-dates <- seq.Date(date_start, date_end, by="day")  
+date_end <- as.Date("2021-01-04")
+dates <- seq.Date(date_start, date_end, by="2 days")  
 
 
 # 1.4. Load bathymetry raster once
@@ -92,7 +89,7 @@ for (sp in sp_list) {
     date_str <- format(date, "%Y%m%d")
     
     # File pattern and folder
-    pat <- paste0("^mean_bathys_X", date_str, "_", sp, "_", mins, "_", trawl, "_INTER1_pred_INTER1_\\.tif$")
+    pat <- paste0("^mean_bathys_X", date_str, "_", sp, "_", mins, "_", trawl, "_INTER2_pred_INTER2_\\.tif$")
     #pat <- paste0("^mean_bathys_X", date_str, "_", sp, "_", mins, "_", trawl, "_pred_cir\\.tif$")
 
     stack_repo <- file.path(indir, YYYY, MM)
@@ -118,7 +115,7 @@ for (sp in sp_list) {
         product_folder <- file.path(outdir, MM)
         if (!dir.exists(product_folder)) dir.create(product_folder, recursive = TRUE)
         
-        clean_name <- paste0("crop_bathys_X", date_str, "_", sp, "_", mins, "_", trawl, "_pred_INTER1.tif")
+        clean_name <- paste0("crop_bathys_X", date_str, "_", sp, "_", mins, "_", trawl, "_pred_INTER2.tif")
         output_file <- file.path(product_folder, clean_name)
         
         tryCatch({
